@@ -226,11 +226,13 @@ export default function AdminDashboard() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
               <div className="flex items-center justify-between sm:justify-start gap-4">
                 <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="lg:hidden border-2 border-black rounded-none h-12 w-12 shrink-0">
-                      <Menu size={24} />
-                    </Button>
-                  </SheetTrigger>
+                  <SheetTrigger
+                    render={
+                      <Button variant="outline" size="icon" className="lg:hidden border-2 border-black rounded-none h-12 w-12 shrink-0">
+                        <Menu size={24} />
+                      </Button>
+                    }
+                  />
                   <SheetContent side="left" className="p-0 bg-[#0A2F6E] border-r-[6px] border-black w-72">
                     <div className="p-8 border-b border-white/10">
                       <div className="flex items-center gap-4">
