@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { createClient, getStoragePathFromUrl } from "@/lib/supabase-client";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
