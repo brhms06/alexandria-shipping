@@ -386,7 +386,7 @@ export default function AdminDashboard() {
                         <TableCell className="px-8 py-6 border-l-2 border-gray-100">
                            <Select
                              value={String(s.status)}
-                             onValueChange={(val) => handleUpdateStatus(s.id, parseInt(val))}
+                             onValueChange={(val) => val && handleUpdateStatus(s.id, parseInt(val))}
                            >
                              <SelectTrigger className={`h-10 w-[180px] text-[9px] font-black uppercase tracking-widest border-2 rounded-none px-4 ${STATUS_COLORS[s.status] || 'bg-gray-100'}`}>
                                <SelectValue />

@@ -344,7 +344,7 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess, shipment }: 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Deployment</Label>
-                        <Select value={formData.status.toString()} onValueChange={(val) => setFormData({ ...formData, status: parseInt(val) })}>
+                        <Select value={formData.status.toString()} onValueChange={(val) => val && setFormData({ ...formData, status: parseInt(val) })}>
                           <SelectTrigger className="h-14 border-2 border-black rounded-none text-xs font-black uppercase tracking-widest focus:ring-0">
                             <SelectValue />
                           </SelectTrigger>
@@ -485,7 +485,7 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess, shipment }: 
                      <div className="grid grid-cols-1 gap-6">
                         <div className="space-y-2">
                            <Label className="text-[9px] font-black uppercase tracking-widest text-white/40">Method</Label>
-                           <Select value={formData.payment_method} onValueChange={(v)=>setFormData({...formData, payment_method: v})}>
+                           <Select value={formData.payment_method} onValueChange={(v)=> v && setFormData({...formData, payment_method: v})}>
                               <SelectTrigger className="h-12 bg-white/5 border-2 border-white/10 rounded-none text-[10px] font-black uppercase tracking-widest">
                                  <SelectValue />
                               </SelectTrigger>
@@ -496,7 +496,7 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess, shipment }: 
                         </div>
                         <div className="space-y-2">
                            <Label className="text-[9px] font-black uppercase tracking-widest text-[#2B7FFF]">Verification Status</Label>
-                           <Select value={formData.payment_status} onValueChange={(v)=>setFormData({...formData, payment_status: v})}>
+                           <Select value={formData.payment_status} onValueChange={(v)=> v && setFormData({...formData, payment_status: v})}>
                               <SelectTrigger className="h-12 bg-[#2B7FFF]/20 border-2 border-[#2B7FFF] rounded-none text-[10px] font-black uppercase tracking-widest text-white">
                                  <SelectValue />
                               </SelectTrigger>
