@@ -32,13 +32,13 @@ const STATUS_LABELS: Record<number, string> = {
   6: "Picked Up"
 };
 
-const STATUS_COLORS: Record<number, string> = {
-  1: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
-  2: "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20",
-  3: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-  4: "bg-red-500/10 text-red-400 border border-red-500/20",
-  5: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
-  6: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+const STATUS_CONFIG: Record<number, { label: string, color: string, border: string, bg: string, glow: string }> = {
+  1: { label: "Received",   color: "text-sky-400",     border: "border-sky-500/50",    bg: "bg-sky-500", glow: "shadow-[0_0_15px_rgba(56,189,248,0.2)]" },
+  2: { label: "Processed",  color: "text-indigo-400",  border: "border-indigo-500/50", bg: "bg-indigo-500", glow: "shadow-[0_0_15px_rgba(129,140,248,0.2)]" },
+  3: { label: "In Transit", color: "text-amber-400",   border: "border-amber-500/50",  bg: "bg-amber-500", glow: "shadow-[0_0_15px_rgba(251,191,36,0.2)]" },
+  4: { label: "On Hold",    color: "text-rose-400",    border: "border-rose-500/50",   bg: "bg-rose-500", glow: "shadow-[0_0_15px_rgba(244,63,94,0.2)]" },
+  5: { label: "Out for Delivery", color: "text-violet-400", border: "border-violet-500/50", bg: "bg-violet-500", glow: "shadow-[0_0_15px_rgba(167,139,250,0.2)]" },
+  6: { label: "Finalized",  color: "text-emerald-400", border: "border-emerald-500/50", bg: "bg-emerald-500", glow: "shadow-[0_0_15px_rgba(52,211,153,0.2)]" },
 };
 
 export default function AdminDashboard() {
@@ -210,6 +210,7 @@ export default function AdminDashboard() {
     );
   };
 
+  return (
     <TooltipProvider>
       <div className="flex min-h-screen bg-[#050B14] font-sans selection:bg-accent selection:text-navy cyber-scanlines relative">
         <div className="absolute inset-0 bg-[#050B14] z-[-1]" />
@@ -368,98 +369,102 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Refined Ledger Table */}
-            <Card className="bg-white/5 border border-white/5 backdrop-blur-sm shadow-none rounded-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader className="bg-white/5 border-b border-white/5">
-                    <TableRow className="hover:bg-transparent border-none">
-                      <TableHead className="font-bold text-[10px] uppercase tracking-widest text-white/30 h-14 px-8">Manifest</TableHead>
-                      <TableHead className="font-bold text-[10px] uppercase tracking-widest text-white/30 h-14 px-8">Client</TableHead>
-                      <TableHead className="font-bold text-[10px] uppercase tracking-widest text-white/30 h-14 px-8">Mode</TableHead>
-                      <TableHead className="font-bold text-[10px] uppercase tracking-widest text-white/30 h-14 px-8">Status</TableHead>
-                      <TableHead className="font-bold text-[10px] uppercase tracking-widest text-white/30 h-14 px-8 text-right">Valuation</TableHead>
-                      <TableHead className="font-bold text-[10px] uppercase tracking-widest text-white/30 h-14 px-8 text-center">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredShipments.map((s) => (
-                      <TableRow key={s.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/5 last:border-0">
-                        <TableCell className="px-8 py-5">
-                          <div className="flex items-center gap-2 group/id">
-                            <span 
-                              className="text-white font-bold text-sm tracking-tight cursor-pointer hover:text-accent transition-colors" 
-                              onClick={() => handleCopy(s.tracking_id)}
-                            >
-                              {s.tracking_id}
-                            </span>
-                            <Copy 
-                              size={12} 
-                              className={`cursor-pointer transition-all ${copiedId === s.tracking_id ? 'text-emerald-500' : 'text-white/20 opacity-0 group-hover/id:opacity-100'}`}
-                              onClick={() => handleCopy(s.tracking_id)}
-                            />
+            {/* Shipment Feed (Card-based Layout) */}
+            <div className="space-y-6">
+              {filteredShipments.length > 0 ? (
+                filteredShipments.map((s) => {
+                  const status = STATUS_CONFIG[s.status] || STATUS_CONFIG[1];
+                  return (
+                    <div 
+                      key={s.id} 
+                      className={`group relative bg-white/5 border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:bg-white/[0.08] hover:translate-x-1 ${status.glow}`}
+                    >
+                      {/* Left Accent Border */}
+                      <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${status.bg} opacity-80 group-hover:opacity-100 transition-opacity`} />
+                      
+                      <div className="p-6 sm:p-8 flex flex-col lg:flex-row gap-8 items-start lg:items-center">
+                        {/* 1. Primary Info */}
+                        <div className="flex-1 min-w-0 space-y-4">
+                          <div className="flex items-center justify-between gap-4">
+                            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight italic truncate">
+                              {s.customer_name || "N/A"}
+                            </h2>
+                            <Badge className={`${status.bg}/10 ${status.color} border ${status.border} text-[9px] uppercase font-bold tracking-[0.1em] px-3 py-1 rounded-full`}>
+                              {status.label}
+                            </Badge>
                           </div>
-                        </TableCell>
-                        <TableCell className="px-8 py-5">
-                          <div className="flex flex-col">
-                            <span className="font-bold text-xs text-white uppercase">{s.customer_name || "N/A"}</span>
-                            <span className="text-[9px] text-white/30 font-bold uppercase tracking-wider mt-1">{s.sender_city} &rarr; {s.receiver_city}</span>
+                          
+                          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                              <Package size={14} className="text-accent" />
+                              ID: <span className="text-white">{s.tracking_id}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                              <Navigation size={14} className="text-accent" />
+                              Current: <span className="text-white">{s.current_location_name || "Scanning..."}</span>
+                            </div>
                           </div>
-                        </TableCell>
-                        <TableCell className="px-8 py-5">
-                           <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-white/5 rounded-full flex items-center justify-center text-white/40 border border-white/5">
-                                 {s.transport_type === 'Sea' ? <Ship size={14} /> : s.transport_type === 'Air' ? <Plane size={14} /> : <Truck size={14} />}
-                              </div>
-                              <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">{s.transport_type}</span>
-                           </div>
-                        </TableCell>
-                        <TableCell className="px-8 py-5">
-                           <Select
-                             value={String(s.status)}
-                             onValueChange={(val) => val && handleUpdateStatus(s.id, parseInt(val))}
-                           >
-                             <SelectTrigger className={`h-9 w-[160px] text-[9px] font-bold uppercase tracking-widest border-none rounded-full px-4 shadow-none ${STATUS_COLORS[s.status] || 'bg-white/5 text-white/40'}`}>
-                               <SelectValue />
-                             </SelectTrigger>
-                             <SelectContent className="rounded-sm bg-navy border-white/10 text-white shadow-2xl backdrop-blur-xl">
-                               {Object.entries(STATUS_LABELS).map(([val, label]) => (
-                                 <SelectItem key={val} value={val} className="text-[9px] font-bold uppercase tracking-widest py-3 focus:bg-accent focus:text-navy cursor-pointer">
-                                   {label}
-                                 </SelectItem>
-                               ))}
-                             </SelectContent>
-                           </Select>
-                        </TableCell>
-                        <TableCell className="px-8 py-5 text-right font-bold text-accent italic">
-                          ${s.shipment_items?.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0).toLocaleString()}
-                        </TableCell>
-                        <TableCell className="px-8 py-5">
-                          <div className="flex justify-center gap-2">
-                            <Button 
-                               variant="ghost" 
-                               size="icon" 
-                               className="h-9 w-9 rounded-full text-white/20 hover:text-white hover:bg-white/10 transition-all" 
-                               onClick={() => handleEdit(s)}
-                            >
-                               <Settings size={16} />
-                            </Button>
-                            <Button 
-                               variant="ghost" 
-                               size="icon" 
-                               className="h-9 w-9 rounded-full text-white/10 hover:text-red-500 hover:bg-red-500/10 transition-all" 
-                               onClick={() => handleDelete(s)}
-                            >
-                               <Trash2 size={16} />
-                            </Button>
+
+                          <div className="flex items-center gap-3 py-2">
+                            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
+                              <span className="text-[10px] font-bold text-white/60">{s.sender_city}</span>
+                            </div>
+                            <ArrowUpRight size={14} className="text-white/20" />
+                            <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
+                              <span className="text-[10px] font-bold text-white">{s.receiver_city}</span>
+                            </div>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </Card>
+                        </div>
+
+                        {/* 2. Metadata & Metrics */}
+                        <div className="flex items-center gap-8 px-8 border-l border-white/5 hidden xl:flex">
+                          <div className="text-center">
+                            <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1">Transport</p>
+                            <div className="text-white/60 flex justify-center">
+                              {s.transport_type === 'Sea' ? <Ship size={20} /> : s.transport_type === 'Air' ? <Plane size={20} /> : <Truck size={20} />}
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] mb-1">Valuation</p>
+                            <p className="text-lg font-black text-accent italic">
+                              ${s.shipment_items?.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* 3. Actions */}
+                        <div className="flex items-center gap-3 w-full lg:w-auto shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-white/5">
+                          <Button 
+                            variant="ghost" 
+                            className="flex-1 lg:flex-none h-12 px-6 bg-accent/10 hover:bg-accent text-accent hover:text-navy font-bold uppercase text-[10px] tracking-widest rounded-sm transition-all flex items-center gap-2"
+                            onClick={() => handleEdit(s)}
+                          >
+                            <Settings size={16} />
+                            <span>Edit Entry</span>
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-12 w-12 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white rounded-sm transition-all"
+                            onClick={() => handleDelete(s)}
+                          >
+                            <Trash2 size={18} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="py-20 text-center border border-dashed border-white/10 rounded-xl bg-white/5">
+                  <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 text-white/20">
+                    <Search size={32} />
+                  </div>
+                  <h3 className="text-xl font-bold text-white italic mb-2">No Manifests Found</h3>
+                  <p className="text-xs font-bold text-white/30 uppercase tracking-widest">Awaiting system input or broader search criteria</p>
+                </div>
+              )}
+            </div>
           </div>
         </main>
       </div>
@@ -477,65 +482,4 @@ export default function AdminDashboard() {
   );
 }
 
-// Internal icons needed for the redesign
-function TrendingUp(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-      <polyline points="16 7 22 7 22 13" />
-    </svg>
-  )
-}
-
-function Plane(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
-    </svg>
-  )
-}
-
-function Truck(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
-      <path d="M15 18H9" />
-      <path d="M19 18h2a1 1 0 0 0 1-1v-5l-4-4h-3v10" />
-      <circle cx="7" cy="18" r="2" />
-      <circle cx="17" cy="18" r="2" />
-    </svg>
-  )
-}
+// End of component
