@@ -32,11 +32,13 @@ export default function NetworkPage() {
           <div className="flex items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="lg:hidden shrink-0 h-10 w-10 border border-slate-200 bg-white rounded-xl">
-                    <Menu size={18} className="text-slate-600" />
-                  </Button>
-                </SheetTrigger>
+                <SheetTrigger 
+                  render={
+                    <Button variant="ghost" size="icon" className="lg:hidden shrink-0 h-10 w-10 border border-slate-200 bg-white rounded-xl">
+                      <Menu size={18} className="text-slate-600" />
+                    </Button>
+                  }
+                />
                 <SheetContent side="left" className="p-0 bg-white border-none w-72">
                   <MobileSidebar isOpen={false} onClose={() => {}} />
                 </SheetContent>

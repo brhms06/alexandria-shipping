@@ -98,11 +98,13 @@ export default function AdminDashboard() {
         <header className="px-8 sm:px-12 py-12 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden h-12 w-12 bg-white border border-slate-200 rounded-2xl">
-                  <Menu className="w-5 h-5 text-slate-600" />
-                </Button>
-              </SheetTrigger>
+              <SheetTrigger 
+                render={
+                  <Button variant="ghost" size="icon" className="lg:hidden h-12 w-12 bg-white border border-slate-200 rounded-2xl">
+                    <Menu className="w-5 h-5 text-slate-600" />
+                  </Button>
+                }
+              />
               <SheetContent side="left" className="p-0 w-64 bg-white">
                 <MobileSidebar isOpen={false} onClose={() => {}} />
               </SheetContent>

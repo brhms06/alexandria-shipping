@@ -413,7 +413,7 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess, shipment }: 
                       <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="space-y-2">
                           <Label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Current Status</Label>
-                          <Select value={formData.status.toString()} onValueChange={v => setFormData({...formData, status: parseInt(v)})}>
+                          <Select value={formData.status.toString()} onValueChange={v => v && setFormData({...formData, status: parseInt(v)})}>
                             <SelectTrigger className="h-12 bg-slate-50/50 border-slate-100 rounded-xl font-bold text-blue-600">
                               <SelectValue />
                             </SelectTrigger>
