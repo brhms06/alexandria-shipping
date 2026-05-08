@@ -12,20 +12,25 @@ const config = {
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
-        serif: ["Playfair Display", "Georgia", "serif"],
+        display: ["Inter", "system-ui", "sans-serif"], // Switching to clean sans for display too
       },
       colors: {
         navy: {
-          DEFAULT: "#0A2F6E",
-          dark: "#061E47",
-          light: "#0E3D8A",
+          DEFAULT: "#003366",
+          dark: "#002244",
+          light: "#004488",
         },
-        brand: {
-          DEFAULT: "#2B7FFF",
-          hover: "#1A6AE0",
-          light: "#EBF2FF",
-          50: "#F0F6FF",
+        accent: {
+          DEFAULT: "#E30613",
+          hover: "#C20510",
+          light: "#FFEBEC",
         },
+        slate: {
+          50: "#F8FAFC",
+          100: "#F1F5F9",
+          200: "#E2E8F0",
+          900: "#0F172A",
+        }
       },
       animation: {
         "float": "float 3s ease-in-out infinite",

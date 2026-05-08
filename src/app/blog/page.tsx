@@ -15,7 +15,7 @@ export default function BlogPage() {
       date: "May 1, 2026",
       author: "Alisa Smith",
       category: "Guides",
-      image: "/about-logistics.jpg",
+      image: "/hero-bg.png",
       readTime: "5 min read"
     },
     {
@@ -24,7 +24,7 @@ export default function BlogPage() {
       date: "April 24, 2026",
       author: "Alexandria Team",
       category: "Industry Trends",
-      image: "/transport-air.jpg",
+      image: "/hero-bg.png",
       readTime: "7 min read"
     },
     {
@@ -42,7 +42,7 @@ export default function BlogPage() {
       date: "April 2, 2026",
       author: "Warehouse Operations",
       category: "Tips",
-      image: "/service-land.png",
+      image: "/hero-bg.png",
       readTime: "4 min read"
     }
   ];

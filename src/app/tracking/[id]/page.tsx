@@ -158,32 +158,46 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
   return (
     <div className="min-h-screen w-full bg-white text-black flex flex-col font-sans">
       
-      {/* ─── 1. OFFICIAL HEADER ─── */}
-      <header className="bg-gradient-to-r from-[#0A2F6E] via-[#1a4b9c] to-[#0A2F6E] text-white py-6 px-4 md:px-10 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl relative overflow-hidden">
-        {/* Glow effect */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-full bg-blue-400/5 blur-[80px] pointer-events-none" />
+      {/* ─── 1. CORPORATE HEADER ─── */}
+      <header className="bg-navy text-white py-8 px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/hero-bg.png"
+            alt="Background"
+            fill
+            className="object-cover opacity-10 grayscale"
+          />
+        </div>
         
-        <div className="flex items-center gap-4 relative z-10">
-          <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-[#0A2F6E] shadow-[4px_4px_0px_rgba(0,0,0,0.2)] transition-transform hover:scale-105">
-            <Ship size={28} />
+        <div className="flex items-center gap-6 relative z-10">
+          <div className="w-14 h-14 bg-accent flex items-center justify-center text-white shadow-xl">
+            <Ship size={32} />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight">ALEXANDRIA LOGISTICS</h1>
-            <p className="text-[10px] font-bold tracking-[0.2em] text-blue-200">OFFICIAL TRACKING PORTAL • SECURE</p>
+            <h1 className="text-2xl font-bold tracking-tight uppercase">Alexandria <span className="text-accent">Tracking</span></h1>
+            <p className="text-[10px] font-bold tracking-[0.3em] text-white/50">SECURE GLOBAL LOGISTICS PORTAL</p>
           </div>
         </div>
+        
         <div className="flex items-center gap-4 w-full md:w-auto relative z-10">
-          <Button onClick={() => window.location.href='/tracking'} variant="outline" className="flex-1 md:flex-none border-white/20 text-white hover:bg-white/10 rounded-none h-12 font-bold uppercase text-[10px] tracking-widest bg-transparent">
+          <Button 
+            onClick={() => window.location.href='/tracking'} 
+            variant="outline" 
+            className="flex-1 md:flex-none border-white/20 text-white hover:bg-white/10 rounded-none h-14 px-8 font-bold uppercase text-[10px] tracking-widest bg-transparent"
+          >
             <ArrowLeft size={16} className="mr-2" /> New Search
           </Button>
-          <Button onClick={generatePDF} className="flex-1 md:flex-none bg-white text-[#0A2F6E] hover:bg-gray-100 rounded-none h-12 font-bold uppercase text-[10px] tracking-widest px-8 shadow-lg">
-            <Printer size={16} className="mr-2" /> Download Receipt
+          <Button 
+            onClick={generatePDF} 
+            className="flex-1 md:flex-none bg-accent hover:bg-accent/90 text-white rounded-none h-14 px-10 font-bold uppercase text-[10px] tracking-widest shadow-xl"
+          >
+            <Printer size={16} className="mr-2" /> Export Manifest
           </Button>
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-10 relative">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#FF8C42]/5 blur-[120px] -z-10 rounded-full" />
+      <main className="flex-1 max-w-7xl mx-auto w-full p-6 md:p-12 relative">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-navy/5 blur-[150px] -z-10 rounded-full" />
         
         <AnimatePresence mode="wait">
           {view === 'info' ? (
@@ -195,17 +209,17 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
               className="space-y-10"
             >
               {/* STATUS BAR */}
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b-4 border-black pb-6 sm:pb-8 gap-4 sm:gap-6 relative">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b-2 border-slate-200 pb-10 gap-8 relative">
                 <div className="relative z-10">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Current Shipment Status</p>
-                  <div className="flex items-center gap-4">
-                    <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0A2F6E] to-[#2B7FFF] uppercase italic">{status.label}</h2>
-                    <div className="w-3 h-3 bg-[#FF8C42] rounded-full animate-ping hidden sm:block" />
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-4">Current Manifest Status</p>
+                  <div className="flex items-center gap-6">
+                    <h2 className="text-4xl md:text-6xl font-extrabold text-navy uppercase tracking-tight italic">{status.label}</h2>
+                    <div className="w-3 h-3 bg-accent rounded-full animate-ping hidden sm:block" />
                   </div>
                 </div>
                 <div className="text-left md:text-right relative z-10">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Estimated Arrival</p>
-                  <p className="text-xl sm:text-2xl md:text-3xl font-black text-[#0A2F6E]">{shipment.estimated_delivery || "DECEMBER 24, 2026"}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-4">Estimated Arrival</p>
+                  <p className="text-2xl md:text-4xl font-extrabold text-navy tracking-tight">{shipment.estimated_delivery || "DECEMBER 24, 2026"}</p>
                 </div>
               </div>
 
@@ -224,56 +238,56 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
               </div>
 
               {/* TWO COLUMN INFO GRID */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-gray-200 border-2 border-gray-200">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-slate-200 border border-slate-200">
                 
                 {/* SENDER COLUMN */}
-                <div className="bg-white p-6 sm:p-8 md:p-12 space-y-6 sm:space-y-8">
-                  <div className="flex items-center gap-4 text-gray-400">
-                    <div className="w-10 h-10 bg-gray-50 flex items-center justify-center shrink-0"><User size={20}/></div>
-                    <h3 className="font-black uppercase tracking-widest text-[10px]">Sender Information</h3>
+                <div className="bg-white p-10 md:p-12 space-y-8">
+                  <div className="flex items-center gap-4 text-slate-400">
+                    <div className="w-10 h-10 bg-slate-50 flex items-center justify-center shrink-0"><User size={20}/></div>
+                    <h3 className="font-bold uppercase tracking-widest text-[10px]">Consignor Details</h3>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl sm:text-3xl font-black text-[#0A2F6E] leading-tight">{shipment.sender_name}</p>
-                    <p className="text-base sm:text-lg font-bold text-gray-500 leading-relaxed max-w-sm">{shipment.sender_address}</p>
-                    <p className="font-mono text-sm font-bold text-gray-400 mt-4">{shipment.customer_phone || "No Contact Provided"}</p>
+                  <div className="space-y-3">
+                    <p className="text-2xl md:text-3xl font-bold text-navy leading-tight">{shipment.sender_name}</p>
+                    <p className="text-lg text-slate-500 leading-relaxed max-w-sm font-light">{shipment.sender_address}</p>
+                    <p className="font-mono text-xs font-medium text-slate-400 mt-6 tracking-widest">{shipment.customer_phone || "CONTACT ENCRYPTED"}</p>
                   </div>
                 </div>
 
                 {/* RECEIVER COLUMN */}
-                <div className="bg-white p-6 sm:p-8 md:p-12 space-y-6 sm:space-y-8">
-                  <div className="flex items-center gap-4 text-gray-400">
-                    <div className="w-10 h-10 bg-gray-50 flex items-center justify-center shrink-0"><Navigation size={20}/></div>
-                    <h3 className="font-black uppercase tracking-widest text-[10px]">Receiver Information</h3>
+                <div className="bg-white p-10 md:p-12 space-y-8">
+                  <div className="flex items-center gap-4 text-slate-400">
+                    <div className="w-10 h-10 bg-slate-50 flex items-center justify-center shrink-0"><Navigation size={20}/></div>
+                    <h3 className="font-bold uppercase tracking-widest text-[10px]">Consignee Details</h3>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-2xl sm:text-3xl font-black text-[#0A2F6E] leading-tight">{shipment.receiver_name}</p>
-                    <p className="text-base sm:text-lg font-bold text-gray-500 leading-relaxed max-w-sm">{shipment.receiver_address}</p>
-                    <p className="font-mono text-sm font-bold text-gray-400 mt-4">Verified Destination Point</p>
+                  <div className="space-y-3">
+                    <p className="text-2xl md:text-3xl font-bold text-navy leading-tight">{shipment.receiver_name}</p>
+                    <p className="text-lg text-slate-500 leading-relaxed max-w-sm font-light">{shipment.receiver_address}</p>
+                    <p className="font-mono text-xs font-medium text-slate-400 mt-6 tracking-widest">VERIFIED DISCHARGE POINT</p>
                   </div>
                 </div>
 
               </div>
 
               {/* THE JOURNEY PATH */}
-              <div className="border-4 border-black p-6 sm:p-12">
-                <h3 className="font-black uppercase tracking-widest text-[10px] text-gray-400 mb-8 sm:mb-10">Logistics Journey Path</h3>
+              <div className="bg-slate-50 border border-slate-100 p-8 md:p-16">
+                <h3 className="font-bold uppercase tracking-[0.3em] text-[10px] text-slate-400 mb-12">Logistics Journey Path</h3>
                 
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-12 relative">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-12 md:gap-16 relative">
                   {/* Background Line */}
-                  <div className="hidden md:block absolute top-10 left-10 right-10 h-1 bg-gray-100 -z-10" />
+                  <div className="hidden md:block absolute top-12 left-12 right-12 h-[2px] bg-slate-200 -z-10" />
 
                   {[
                     { label: "Origin Port", location: shipment.sender_address.split(',')[0], icon: Ship, active: true },
-                    { label: "Current Point", location: shipment.current_location_name || "En Route", icon: Navigation, active: true, highlighted: true },
+                    { label: "Current Point", location: shipment.current_location_name || "In Transit", icon: Navigation, active: true, highlighted: true },
                     { label: "Final Port", location: shipment.receiver_address.split(',')[0], icon: Anchor, active: false },
                   ].map((point, i) => (
-                    <div key={i} className="flex md:flex-col items-center gap-5 md:gap-4 md:text-center flex-1 w-full">
-                      <div className={`w-14 h-14 sm:w-20 sm:h-20 flex items-center justify-center rounded-none border-4 transition-all shrink-0 ${point.highlighted ? 'bg-[#0A2F6E] border-[#0A2F6E] text-white scale-110 shadow-2xl' : 'bg-white border-gray-100 text-gray-300'}`}>
-                        <point.icon size={point.highlighted ? 28 : 24} className="sm:size-[32px]" />
+                    <div key={i} className="flex md:flex-col items-center gap-6 md:gap-6 md:text-center flex-1 w-full">
+                      <div className={`w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-none border-2 transition-all shrink-0 ${point.highlighted ? 'bg-navy border-navy text-white shadow-2xl scale-110' : 'bg-white border-slate-200 text-slate-300'}`}>
+                        <point.icon size={32} className="relative z-10" />
                       </div>
                       <div className="flex-1">
-                        <p className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest mb-1 ${point.highlighted ? 'text-[#0A2F6E]' : 'text-gray-400'}`}>{point.label}</p>
-                        <p className={`text-base sm:text-xl font-black ${point.highlighted ? 'text-[#0A2F6E]' : 'text-gray-900'}`}>{point.location}</p>
+                        <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${point.highlighted ? 'text-accent' : 'text-slate-400'}`}>{point.label}</p>
+                        <p className={`text-xl font-bold ${point.highlighted ? 'text-navy' : 'text-slate-900'}`}>{point.location}</p>
                       </div>
                     </div>
                   ))}
@@ -281,27 +295,27 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
               </div>
 
               {/* TRACKING HISTORY TABLE */}
-              <div className="space-y-6">
-                <h3 className="font-black uppercase tracking-widest text-[10px] text-gray-400">Activity History Log</h3>
-                <div className="border-2 border-black overflow-x-auto">
+              <div className="space-y-8">
+                <h3 className="font-bold uppercase tracking-[0.3em] text-[10px] text-slate-400">Activity History Log</h3>
+                <div className="border border-slate-200 overflow-x-auto shadow-sm">
                   <table className="w-full text-left min-w-[600px] md:min-w-0">
-                    <thead className="bg-black text-white text-[10px] font-black uppercase tracking-widest">
+                    <thead className="bg-navy text-white text-[10px] font-bold uppercase tracking-[0.2em]">
                       <tr>
-                        <th className="p-4">Date & Time</th>
-                        <th className="p-4">Operational Status</th>
-                        <th className="p-4">Details / Location</th>
+                        <th className="p-6">Date & Time</th>
+                        <th className="p-6">Operational Status</th>
+                        <th className="p-6">Details / Location</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-slate-100 bg-white">
                       {updates.length > 0 ? updates.map((update, i) => (
-                        <tr key={i} className="hover:bg-gray-50 transition-colors">
-                          <td className="p-4 text-[11px] sm:text-sm font-bold text-gray-500">{new Date(update.created_at).toLocaleString()}</td>
-                          <td className="p-4 text-[11px] sm:text-sm font-black text-[#0A2F6E] uppercase">{update.status || shipment.status_name}</td>
-                          <td className="p-4 text-[11px] sm:text-sm font-bold text-gray-900">{update.message || update.location || "Manifest Update Logged"}</td>
+                        <tr key={i} className="hover:bg-slate-50 transition-colors">
+                          <td className="p-6 text-sm font-medium text-slate-500">{new Date(update.created_at).toLocaleString()}</td>
+                          <td className="p-6 text-sm font-bold text-navy uppercase tracking-tight">{update.status || shipment.status_name}</td>
+                          <td className="p-6 text-sm font-light text-slate-600">{update.message || update.location || "Manifest Update Logged"}</td>
                         </tr>
                       )) : (
                         <tr>
-                          <td colSpan={3} className="p-10 text-center text-gray-400 font-bold uppercase tracking-widest text-[10px]">Tracking initialized. Live updates pending...</td>
+                          <td colSpan={3} className="p-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Tracking initialized. Live updates pending...</td>
                         </tr>
                       )}
                     </tbody>

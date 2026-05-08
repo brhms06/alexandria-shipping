@@ -17,7 +17,7 @@ export default function ProjectsPage() {
         { label: "Cargo", value: "450+ Toys" },
         { label: "Status", value: "Delivered On Time" }
       ],
-      image: "/about-logistics-2.jpg"
+      image: "/hero-bg.png"
     },
     {
       title: "Transcontinental Auto Fleet",
@@ -28,7 +28,7 @@ export default function ProjectsPage() {
         { label: "Volume", value: "400+ Cars" },
         { label: "Mode", value: "Ocean Freight" }
       ],
-      image: "/service-sea.png"
+      image: "/hero-bg.png"
     }
   ];
 

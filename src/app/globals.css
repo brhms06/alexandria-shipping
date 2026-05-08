@@ -9,39 +9,25 @@
    ALEXANDRIA DESIGN TOKENS — BLUE PALETTE
    ============================================ */
 :root {
-  /* Brand */
-  --navy: #0A2F6E;
-  --navy-dark: #061E47;
-  --blue: #2B7FFF;
-  --blue-hover: #1A6AE0;
-  --blue-light: #EBF2FF;
-  --blue-50: #F0F6FF;
+  /* Brand - Cyber Noir */
+  --navy: #0A111A;
+  --navy-light: #0B1421;
+  --navy-deep: #050B14;
+  --accent: #FFBE00;
+  --accent-glow: rgba(255, 190, 0, 0.4);
 
   /* Neutrals */
   --white: #ffffff;
-  --gray-50: #F8FAFC;
-  --gray-100: #F1F5F9;
-  --gray-200: #E2E8F0;
-  --gray-300: #CBD5E1;
-  --gray-400: #94A3B8;
-  --gray-500: #64748B;
-  --gray-600: #475569;
-  --gray-700: #334155;
-  --gray-800: #1E293B;
-  --gray-900: #0F172A;
-  --text-dark: #0A1628;
-  --text-body: #5A6B80;
-
-  /* Utility */
-  --shadow-sm: 0 1px 3px rgba(10,47,110,0.06);
-  --shadow-md: 0 4px 20px rgba(10,47,110,0.08);
-  --shadow-lg: 0 12px 40px rgba(10,47,110,0.12);
-  --shadow-xl: 0 20px 60px rgba(10,47,110,0.15);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
 }
 
 /* ── Global Resets ── */
@@ -53,16 +39,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
   overflow-x: hidden;
+  background-color: var(--white);
+  color: var(--slate-900);
 }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 
 /* ── Typography ── */
-h1, h2, h3, h4 {
-  font-family: 'Playfair Display', Georgia, serif;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 /* ============================================
@@ -135,9 +123,69 @@ h1, h2, h3, h4 {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+/* ============================================
+   CYBER-NOIR EFFECTS
+   ============================================ */
+.cyber-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cyber-scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-scanlines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.1;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.glow-border {
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.scanline-move::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.1;
+  animation: scanline 4s linear infinite;
+  pointer-events: none;
 }
 
 /* ============================================

@@ -46,9 +46,9 @@ const PACKAGE_STATUSES = [
   { id: 6, label: "Picked Up" }
 ];
 const TRANSPORT_TYPES = [
-  { id: 'land', label: 'Land', icon: Box, color: 'bg-blue-50 text-blue-600 border-blue-100' },
-  { id: 'sea', label: 'Sea', icon: Flag, color: 'bg-cyan-50 text-cyan-600 border-cyan-100' },
-  { id: 'air', label: 'Air', icon: Clock, color: 'bg-purple-50 text-purple-600 border-purple-100' }
+  { id: 'land', label: 'Land', icon: Box, color: 'bg-blue-500/10 text-blue-400 border border-blue-500/20' },
+  { id: 'sea', label: 'Sea', icon: Flag, color: 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' },
+  { id: 'air', label: 'Air', icon: Clock, color: 'bg-purple-500/10 text-purple-400 border border-purple-500/20' }
 ];
 
 export default function ShipmentModal({ isOpen, onClose, onSuccess, shipment }: ShipmentModalProps) {
@@ -287,36 +287,38 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess, shipment }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] lg:max-w-7xl h-[92vh] p-0 overflow-hidden bg-white border-none rounded-none shadow-none flex flex-col font-sans">
+      <DialogContent className="max-w-[95vw] lg:max-w-6xl h-[90vh] p-0 overflow-hidden bg-[#0A111A] border border-white/10 rounded-sm shadow-2xl flex flex-col font-sans selection:bg-accent selection:text-navy cyber-scanlines relative">
+        <div className="absolute inset-0 bg-[#0A111A] z-[-1]" />
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay z-0" />
         
         {/* ─── OFFICIAL HEADER ─── */}
-        <header className="px-4 sm:px-8 py-4 sm:py-6 bg-gradient-to-r from-[#0A2F6E] via-[#1a4b9c] to-[#0A2F6E] text-white border-b-4 border-black flex items-center justify-between shrink-0 z-20 relative overflow-hidden">
-          {/* Subtle backglow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-full bg-blue-400/5 blur-[80px] pointer-events-none" />
+        <header className="px-6 sm:px-10 py-5 sm:py-8 bg-navy text-white border-b border-white/5 flex items-center justify-between shrink-0 z-20 relative overflow-hidden">
+          {/* Subtle backglow effect */}
+          <div className="absolute top-0 left-1/4 w-1/2 h-full bg-accent/5 blur-[120px] pointer-events-none" />
           
-          <div className="flex items-center gap-3 sm:gap-6 relative z-10">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white flex items-center justify-center text-[#0A2F6E] shrink-0 shadow-[4px_4px_0px_rgba(0,0,0,0.2)] transition-transform hover:scale-105">
-               <Package size={24} className="sm:size-8" />
+          <div className="flex items-center gap-4 sm:gap-8 relative z-10">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/5 backdrop-blur-md flex items-center justify-center text-white shrink-0 border border-white/10 rounded-sm transition-transform hover:scale-105">
+               <Package size={24} className="sm:size-8 text-accent" />
             </div>
             <div className="min-w-0">
-              <DialogTitle className="text-xl sm:text-3xl font-black text-white uppercase tracking-tighter italic leading-none mb-1 truncate">
+              <DialogTitle className="text-xl sm:text-4xl font-bold text-white tracking-tighter italic leading-none mb-2 truncate glow-text">
                 {shipment ? 'Edit Manifest' : 'New Entry'}
               </DialogTitle>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-blue-200 flex items-center gap-1 group cursor-pointer hover:text-white transition-colors" onClick={handleCopy}>
-                   ID: {formData.tracking_id} {copied ? <Check size={8} className="text-emerald-400" /> : <Copy size={8} className="opacity-50" />}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-white/50 flex items-center gap-2 group cursor-pointer hover:text-white transition-colors" onClick={handleCopy}>
+                   MANIFEST ID: <span className="text-white">{formData.tracking_id}</span> {copied ? <Check size={10} className="text-emerald-400" /> : <Copy size={10} className="opacity-30 group-hover:opacity-100 transition-opacity" />}
                 </span>
                 <span className="hidden sm:inline w-1 h-1 bg-white/20 rounded-full" />
-                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-white/40 truncate">HQ Command Console</span>
+                <span className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-white/30">Alexandria Terminal Station</span>
               </div>
             </div>
           </div>
-          <Button variant="outline" size="icon" onClick={onClose} className="border-2 border-white/20 bg-transparent text-white rounded-none hover:bg-white/10 transition-all h-10 w-10 shrink-0">
-            <X size={20} />
+          <Button variant="ghost" size="icon" onClick={onClose} className="text-white/40 hover:text-white hover:bg-white/5 transition-all h-12 w-12 shrink-0">
+            <X size={24} />
           </Button>
         </header>
 
-        <div className="flex-1 overflow-y-auto bg-gray-50 p-4 sm:p-10">
+        <div className="flex-1 overflow-y-auto bg-[#050B14] p-6 sm:p-10 scrollbar-thin scrollbar-thumb-white/10">
           <form id="manifest-form" onSubmit={handleSubmit} className="max-w-6xl mx-auto space-y-6 sm:space-y-10">
             
             {error && (
@@ -325,232 +327,231 @@ export default function ShipmentModal({ isOpen, onClose, onSuccess, shipment }: 
               </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10">
-              
-              {/* ─── LEFT: SHIPMENT DETAILS ─── */}
-              <div className="lg:col-span-7 space-y-6 sm:space-y-10">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10">
                 
-                {/* 1. MANIFEST LOGIC (Status/Location) */}
-                <div className="bg-white border-2 sm:border-4 border-black shadow-[6px_6px_0px_rgba(0,0,0,0.05)] sm:shadow-[12px_12px_0px_rgba(0,0,0,0.05)] overflow-hidden group">
-                  <div className="p-4 sm:p-6 border-b-2 sm:border-b-4 border-black bg-gradient-to-r from-[#0A2F6E] to-[#2B7FFF] text-white flex items-center justify-between relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 -translate-x-full group-hover:animate-shimmer" />
-                    <div className="flex items-center gap-3 relative z-10">
-                      <Navigation2 size={18} className="sm:size-5" />
-                      <h3 className="font-black uppercase text-[10px] sm:text-xs tracking-widest italic">Operational Tracking</h3>
-                    </div>
-                    <Badge className="bg-white text-[#0A2F6E] rounded-none font-black text-[7px] sm:text-[8px] uppercase tracking-widest relative z-10">Active Vector</Badge>
-                  </div>
+                {/* ─── LEFT: SHIPMENT DETAILS ─── */}
+                <div className="lg:col-span-7 space-y-6 sm:space-y-10">
                   
-                  <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status Deployment</Label>
-                        <Select value={formData.status.toString()} onValueChange={(val) => val && setFormData({ ...formData, status: parseInt(val) })}>
-                          <SelectTrigger className="h-14 border-2 border-black rounded-none text-xs font-black uppercase tracking-widest focus:ring-0">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="border-2 border-black rounded-none">
-                            {PACKAGE_STATUSES.map(s => <SelectItem key={s.id} value={s.id.toString()} className="font-black uppercase text-[10px] tracking-widest focus:bg-[#0A2F6E] focus:text-white">{s.label}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
+                  {/* 1. OPERATIONAL TRACKING */}
+                  <Card className="border border-white/5 bg-white/5 backdrop-blur-sm overflow-hidden group">
+                    <div className="p-4 sm:p-6 border-b border-white/5 bg-white/5 flex items-center justify-between relative overflow-hidden">
+                      <div className="flex items-center gap-3 relative z-10 text-white">
+                        <Navigation2 size={18} className="sm:size-5 text-accent" />
+                        <h3 className="font-bold uppercase text-[10px] sm:text-xs tracking-[0.2em] italic">Operational Tracking</h3>
                       </div>
-                      <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Transit Mode</Label>
-                        <Select value={formData.transport_type} onValueChange={(val) => setFormData({ ...formData, transport_type: val as any })}>
-                          <SelectTrigger className="h-14 border-2 border-black rounded-none text-xs font-black uppercase tracking-widest focus:ring-0">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="border-2 border-black rounded-none">
-                            {TRANSPORT_TYPES.map(t => <SelectItem key={t.id} value={t.id} className="font-black uppercase text-[10px] tracking-widest focus:bg-[#0A2F6E] focus:text-white">{t.label}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full font-bold text-[8px] uppercase tracking-widest px-3 py-1 relative z-10 animate-pulse">Live Signal</Badge>
                     </div>
-
-                    <div className="space-y-6">
-                      <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Manifest Origin</Label>
-                        <div className="flex gap-2">
-                           <Input value={formData.sender_address} onChange={(e) => setFormData({ ...formData, sender_address: e.target.value })} className="h-14 border-2 border-black rounded-none text-xs font-black uppercase focus:ring-0" />
-                           <Button type="button" onClick={() => handleGeocode(formData.sender_address, 'sender')} className="h-14 w-14 bg-black rounded-none text-white hover:bg-[#0A2F6E]"><Search size={18} /></Button>
+                    
+                    <div className="p-6 sm:p-8 space-y-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-3">
+                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Current Deployment Status</Label>
+                          <Select value={formData.status.toString()} onValueChange={(val) => val && setFormData({ ...formData, status: parseInt(val) })}>
+                            <SelectTrigger className="h-12 border-white/10 rounded-sm text-xs font-bold uppercase tracking-widest focus:ring-accent bg-white/5 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-navy border-white/10 rounded-sm text-white">
+                              {PACKAGE_STATUSES.map(s => <SelectItem key={s.id} value={s.id.toString()} className="font-bold uppercase text-[10px] tracking-widest focus:bg-accent focus:text-navy py-3">{s.label}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Transport Vector</Label>
+                          <Select value={formData.transport_type} onValueChange={(val) => setFormData({ ...formData, transport_type: val as any })}>
+                            <SelectTrigger className="h-12 border-white/10 rounded-sm text-xs font-bold uppercase tracking-widest focus:ring-accent bg-white/5 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-navy border-white/10 rounded-sm text-white">
+                              {TRANSPORT_TYPES.map(t => <SelectItem key={t.id} value={t.id} className="font-bold uppercase text-[10px] tracking-widest focus:bg-accent focus:text-navy py-3">{t.label}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
-                      <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Current Vector Position</Label>
-                        <div className="flex gap-2">
-                           <Input value={formData.current_location_name} onChange={(e) => setFormData({ ...formData, current_location_name: e.target.value })} className="h-14 border-2 border-black rounded-none text-xs font-black uppercase focus:ring-0 bg-blue-50/50" />
-                           <Button type="button" onClick={() => handleGeocode(formData.current_location_name, 'current')} className="h-14 w-14 bg-[#0A2F6E] rounded-none text-white"><Search size={18} /></Button>
+
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Manifest Origin Point</Label>
+                          <div className="flex gap-2">
+                             <Input value={formData.sender_address} onChange={(e) => setFormData({ ...formData, sender_address: e.target.value })} className="h-12 bg-white/5 border-white/10 rounded-sm text-xs font-bold uppercase focus-visible:ring-accent text-white" />
+                             <Button type="button" onClick={() => handleGeocode(formData.sender_address, 'sender')} className="h-12 w-12 bg-accent rounded-sm text-navy hover:bg-accent/90"><Search size={18} /></Button>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Real-time Location Tag</Label>
+                          <div className="flex gap-2">
+                             <Input value={formData.current_location_name} onChange={(e) => setFormData({ ...formData, current_location_name: e.target.value })} className="h-12 bg-white/5 border-white/10 rounded-sm text-xs font-bold uppercase focus-visible:ring-accent text-white" />
+                             <Button type="button" onClick={() => handleGeocode(formData.current_location_name, 'current')} className="h-12 w-12 bg-accent rounded-sm text-navy hover:bg-accent/90"><Search size={18} /></Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="h-[300px] border border-white/5 rounded-sm relative overflow-hidden bg-black/40 grayscale contrast-125">
+                         <TrackingMap 
+                          pickup={{ lat: formData.sender_lat, lng: formData.sender_lng, label: formData.sender_address }}
+                          dropoff={{ lat: formData.receiver_lat, lng: formData.receiver_lng, label: formData.receiver_address }}
+                          current={{ lat: formData.current_lat, lng: formData.current_lng, label: formData.current_location_name }}
+                          transportType={formData.transport_type}
+                          onMapClick={handleMapClick}
+                        />
+                        <div className="absolute top-4 left-4 z-[1000] flex gap-2">
+                          {(['sender', 'receiver', 'current'] as const).map((t) => (
+                            <button key={t} type="button" onClick={() => setMapTarget(t)} className={`px-4 py-2 border border-white/10 rounded-sm font-bold uppercase text-[9px] tracking-widest shadow-xl transition-all ${mapTarget === t ? 'bg-accent text-navy' : 'bg-navy/80 text-white hover:bg-navy backdrop-blur-md'}`}>
+                              {t === 'sender' ? 'Set Origin' : t === 'receiver' ? 'Set Dest' : 'Set Position'}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
+                  </Card>
 
-                    <div className="h-[300px] border-4 border-black relative">
-                       <TrackingMap 
-                        pickup={{ lat: formData.sender_lat, lng: formData.sender_lng, label: formData.sender_address }}
-                        dropoff={{ lat: formData.receiver_lat, lng: formData.receiver_lng, label: formData.receiver_address }}
-                        current={{ lat: formData.current_lat, lng: formData.current_lng, label: formData.current_location_name }}
-                        transportType={formData.transport_type}
-                        onMapClick={handleMapClick}
-                      />
-                      <div className="absolute top-4 left-4 z-[1000] flex gap-2">
-                        {(['sender', 'receiver', 'current'] as const).map((t) => (
-                          <button key={t} type="button" onClick={() => setMapTarget(t)} className={`px-4 py-2 border-2 border-black font-black uppercase text-[8px] tracking-widest transition-all ${mapTarget === t ? 'bg-[#0A2F6E] text-white' : 'bg-white text-black'}`}>
-                            Set {t === 'sender' ? 'Origin' : t === 'receiver' ? 'Dest' : 'Current'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                  {/* 2. SENDER & RECEIVER PROFILES */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <Card className="border border-white/5 bg-white/5 backdrop-blur-sm p-8 space-y-6">
+                        <h4 className="text-sm font-bold uppercase tracking-[0.2em] border-b border-white/5 pb-4 italic text-accent">Sender Profile</h4>
+                        <div className="space-y-4">
+                           <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Entity Name</Label>
+                              <Input value={formData.sender_name} onChange={(e) => setFormData({ ...formData, sender_name: e.target.value })} className="h-11 bg-white/5 border-white/10 rounded-sm text-xs font-bold text-white focus-visible:ring-accent" />
+                           </div>
+                        </div>
+                     </Card>
+                     <Card className="border border-white/5 bg-white/5 backdrop-blur-sm p-8 space-y-6">
+                        <h4 className="text-sm font-bold uppercase tracking-[0.2em] border-b border-white/5 pb-4 italic text-accent">Consignee Profile</h4>
+                        <div className="space-y-4">
+                           <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Full Name</Label>
+                              <Input value={formData.receiver_name} onChange={(e) => setFormData({ ...formData, receiver_name: e.target.value })} className="h-11 bg-white/5 border-white/10 rounded-sm text-xs font-bold text-white focus-visible:ring-accent" />
+                           </div>
+                           <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Contact Terminal</Label>
+                              <Input value={formData.customer_phone} onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })} className="h-11 bg-white/5 border-white/10 rounded-sm text-xs font-bold text-white focus-visible:ring-accent" />
+                           </div>
+                        </div>
+                     </Card>
                   </div>
                 </div>
 
-                {/* 2. SENDER & RECEIVER PROFILES */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                   <div className="bg-white border-4 border-black p-8 space-y-6">
-                      <h4 className="text-sm font-black uppercase tracking-widest border-b-2 border-black pb-2 italic text-[#0A2F6E]">Origin Profile</h4>
-                      <div className="space-y-4">
-                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Sender Name</Label>
-                            <Input value={formData.sender_name} onChange={(e) => setFormData({ ...formData, sender_name: e.target.value })} className="h-12 border-2 border-black rounded-none text-xs font-black" />
-                         </div>
-                      </div>
-                   </div>
-                   <div className="bg-white border-4 border-black p-8 space-y-6">
-                      <h4 className="text-sm font-black uppercase tracking-widest border-b-2 border-black pb-2 italic text-[#0A2F6E]">Delivery Profile</h4>
-                      <div className="space-y-4">
-                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Receiver Name</Label>
-                            <Input value={formData.receiver_name} onChange={(e) => setFormData({ ...formData, receiver_name: e.target.value })} className="h-12 border-2 border-black rounded-none text-xs font-black" />
-                         </div>
-                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Contact Number</Label>
-                            <Input value={formData.customer_phone} onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })} className="h-12 border-2 border-black rounded-none text-xs font-black" />
-                         </div>
-                      </div>
-                   </div>
-                </div>
-              </div>
-
-              {/* ─── RIGHT: CARGO & FINANCIALS ─── */}
-              <div className="lg:col-span-5 space-y-10">
-                
-                {/* 3. LOGISTICS UPDATES (CRITICAL) */}
-                <div className="bg-white border-4 border-black shadow-[12px_12px_0px_rgba(10,47,110,0.05)] overflow-hidden">
-                  <div className="p-6 border-b-4 border-black bg-emerald-500 text-white flex items-center gap-3">
-                    <Activity size={20} />
-                    <h3 className="font-black uppercase text-xs tracking-widest italic">Timeline Deployment</h3>
-                  </div>
-                  <div className="p-8 space-y-6">
-                    <div className="space-y-3">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Master Narrative</Label>
-                      <Textarea 
-                        value={formData.internal_notes}
-                        onChange={(e) => setFormData({ ...formData, internal_notes: e.target.value })}
-                        className="min-h-[120px] border-2 border-black rounded-none text-xs font-bold leading-relaxed resize-none focus:ring-0"
-                        placeholder="Current manifest narrative... visible to client."
-                      />
+                {/* ─── RIGHT: CARGO & FINANCIALS ─── */}
+                <div className="lg:col-span-5 space-y-10">
+                  
+                  {/* 3. TIMELINE DEPLOYMENT */}
+                  <Card className="border border-white/5 bg-white/5 backdrop-blur-sm overflow-hidden">
+                    <div className="p-6 border-b border-white/5 bg-white/5 text-white flex items-center gap-3">
+                      <Activity size={18} className="text-accent" />
+                      <h3 className="font-bold uppercase text-[10px] tracking-[0.2em] italic">Timeline Deployment</h3>
                     </div>
-                    <div className="p-6 bg-gray-50 border-2 border-black space-y-4">
-                       <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-[#0A2F6E]">Trigger Timeline Update</span>
-                          <input type="checkbox" checked={createLog} onChange={(e) => setCreateLog(e.target.checked)} className="w-5 h-5 border-2 border-black rounded-none checked:bg-[#0A2F6E]" />
+                    <div className="p-8 space-y-6">
+                      <div className="space-y-3">
+                        <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Public Narrative</Label>
+                        <Textarea 
+                          value={formData.internal_notes}
+                          onChange={(e) => setFormData({ ...formData, internal_notes: e.target.value })}
+                          className="min-h-[120px] bg-white/5 border-white/10 rounded-sm text-xs font-medium leading-relaxed resize-none focus-visible:ring-accent text-white placeholder:text-white/10"
+                          placeholder="Current manifest narrative... visible to client."
+                        />
+                      </div>
+                      <div className="p-6 bg-white/5 border border-white/5 rounded-sm space-y-4">
+                         <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">Log Automatic Milestone</span>
+                            <input type="checkbox" checked={createLog} onChange={(e) => setCreateLog(e.target.checked)} className="w-4 h-4 accent-accent rounded-sm bg-white/5 border-white/10" />
+                         </div>
+                         {createLog && (
+                           <div className="space-y-3 animate-in fade-in slide-in-from-top-1">
+                              <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/30">Verification Note</Label>
+                              <Input value={logMessage} onChange={(e) => setLogMessage(e.target.value)} placeholder="e.g. Verified by Port Authority" className="h-11 bg-white/5 border-white/10 rounded-sm text-[10px] font-bold uppercase tracking-wider text-white focus-visible:ring-accent" />
+                           </div>
+                         )}
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* 4. FINANCIAL LEDGER */}
+                  <Card className="bg-navy text-white border-none shadow-xl overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                    <div className="p-6 border-b border-white/5 flex items-center gap-3 bg-white/5">
+                      <DollarSign size={18} className="text-accent" />
+                      <h3 className="font-bold uppercase text-[10px] tracking-[0.2em] italic">Financial Ledger</h3>
+                    </div>
+                    <div className="p-8 space-y-8 relative z-10">
+                       <div className="space-y-3">
+                          <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Declared Valuation (USD)</Label>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-accent italic">$</span>
+                            <Input 
+                              type="number" 
+                              value={formData.amount} 
+                              onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })} 
+                              className="h-16 bg-white/5 border-white/10 rounded-sm text-3xl font-bold text-white pl-10 focus-visible:ring-accent" 
+                            />
+                          </div>
                        </div>
-                       {createLog && (
-                         <div className="space-y-3 animate-in fade-in slide-in-from-top-1">
-                            <Label className="text-[9px] font-black uppercase tracking-widest text-gray-400">Milestone Message</Label>
-                            <Input value={logMessage} onChange={(e) => setLogMessage(e.target.value)} placeholder="e.g. Verified by Port Authority" className="h-12 border-2 border-black rounded-none text-[10px] font-black uppercase" />
+                       <div className="grid grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                             <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/30">Protocol</Label>
+                             <Select value={formData.payment_method} onValueChange={(v)=> v && setFormData({...formData, payment_method: v})}>
+                                <SelectTrigger className="h-11 bg-white/5 border-white/10 rounded-sm text-[10px] font-bold uppercase tracking-widest">
+                                   <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="border-slate-200 rounded-sm">
+                                   {PAYMENT_METHODS.map(m => <SelectItem key={m} value={m} className="font-bold uppercase text-[10px] tracking-widest py-2">{m}</SelectItem>)}
+                                </SelectContent>
+                             </Select>
+                          </div>
+                          <div className="space-y-2">
+                             <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-accent/60">Authorization</Label>
+                             <Select value={formData.payment_status} onValueChange={(v)=> v && setFormData({...formData, payment_status: v})}>
+                                <SelectTrigger className="h-11 bg-accent/20 border-accent/40 rounded-sm text-[10px] font-bold uppercase tracking-widest text-accent">
+                                   <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-navy border-white/10 rounded-sm text-white">
+                                   {PAYMENT_STATUSES.map(s => <SelectItem key={s} value={s} className="font-bold uppercase text-[10px] tracking-widest py-2 focus:bg-accent focus:text-navy">{s}</SelectItem>)}
+                                </SelectContent>
+                             </Select>
+                          </div>
+                       </div>
+                    </div>
+                  </Card>
+
+                  {/* 5. CARGO EVIDENCE */}
+                  <Card className="border border-white/5 bg-white/5 backdrop-blur-sm p-8 space-y-6">
+                    <h4 className="text-sm font-bold uppercase tracking-[0.2em] border-b border-white/5 pb-4 italic text-accent">Cargo Evidence</h4>
+                    <div className="flex items-center justify-center border-2 border-dashed border-white/10 rounded-sm aspect-video relative group overflow-hidden bg-black/20">
+                       {imagePreview ? (
+                         <Image src={imagePreview} alt="Evidence" fill className="object-cover transition-all" />
+                       ) : (
+                         <div className="text-center">
+                            <ImageIcon size={32} className="mx-auto text-white/10 mb-2" />
+                            <p className="text-[8px] font-bold uppercase tracking-widest text-white/20">Awaiting Signal</p>
                          </div>
                        )}
+                       <button type="button" onClick={() => fileInputRef.current?.click()} className="absolute inset-0 bg-navy/90 text-white opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-3 backdrop-blur-md">
+                          <Upload size={24} className="text-accent" />
+                          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Upload Verification</span>
+                       </button>
+                       <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
                     </div>
-                  </div>
-                </div>
+                  </Card>
 
-                {/* 4. FINANCIAL LEDGER */}
-                <div className="bg-black text-white border-4 border-black shadow-[12px_12px_0px_rgba(0,0,0,0.1)] overflow-hidden">
-                  <div className="p-6 border-b-2 border-white/10 flex items-center gap-3 bg-white/5">
-                    <DollarSign size={20} className="text-[#2B7FFF]" />
-                    <h3 className="font-black uppercase text-xs tracking-widest italic">Financial Ledger</h3>
-                  </div>
-                  <div className="p-8 space-y-8">
-                     <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-white/40">Cargo Valuation (USD)</Label>
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-[#2B7FFF] italic">$</span>
-                          <Input 
-                            type="number" 
-                            value={formData.amount} 
-                            onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })} 
-                            className="h-16 bg-white/5 border-2 border-white/10 rounded-none text-2xl font-black text-white pl-10 focus:ring-0" 
-                          />
-                        </div>
-                     </div>
-                     <div className="grid grid-cols-1 gap-6">
-                        <div className="space-y-2">
-                           <Label className="text-[9px] font-black uppercase tracking-widest text-white/40">Method</Label>
-                           <Select value={formData.payment_method} onValueChange={(v)=> v && setFormData({...formData, payment_method: v})}>
-                              <SelectTrigger className="h-12 bg-white/5 border-2 border-white/10 rounded-none text-[10px] font-black uppercase tracking-widest">
-                                 <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="border-2 border-black rounded-none">
-                                 {PAYMENT_METHODS.map(m => <SelectItem key={m} value={m} className="font-black uppercase text-[10px] tracking-widest">{m}</SelectItem>)}
-                              </SelectContent>
-                           </Select>
-                        </div>
-                        <div className="space-y-2">
-                           <Label className="text-[9px] font-black uppercase tracking-widest text-[#2B7FFF]">Verification Status</Label>
-                           <Select value={formData.payment_status} onValueChange={(v)=> v && setFormData({...formData, payment_status: v})}>
-                              <SelectTrigger className="h-12 bg-[#2B7FFF]/20 border-2 border-[#2B7FFF] rounded-none text-[10px] font-black uppercase tracking-widest text-white">
-                                 <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent className="border-2 border-black rounded-none">
-                                 {PAYMENT_STATUSES.map(s => <SelectItem key={s} value={s} className="font-black uppercase text-[10px] tracking-widest">{s}</SelectItem>)}
-                              </SelectContent>
-                           </Select>
-                        </div>
-                     </div>
-                  </div>
                 </div>
-
-                {/* 5. CARGO EVIDENCE */}
-                <div className="bg-white border-4 border-black p-8 space-y-6">
-                  <h4 className="text-sm font-black uppercase tracking-widest border-b-2 border-black pb-2 italic text-[#0A2F6E]">Cargo Evidence</h4>
-                  <div className="flex items-center justify-center border-4 border-dashed border-gray-200 aspect-video relative group overflow-hidden">
-                     {imagePreview ? (
-                       <Image src={imagePreview} alt="Evidence" fill className="object-cover grayscale group-hover:grayscale-0 transition-all" />
-                     ) : (
-                       <div className="text-center">
-                          <ImageIcon size={40} className="mx-auto text-gray-200 mb-2" />
-                          <p className="text-[8px] font-black uppercase text-gray-300">No Image Initialized</p>
-                       </div>
-                     )}
-                     <button type="button" onClick={() => fileInputRef.current?.click()} className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-2">
-                        <Upload size={24} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Update Evidence</span>
-                     </button>
-                     <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
-                  </div>
-                </div>
-
               </div>
-            </div>
           </form>
         </div>
 
         {/* ─── OFFICIAL FOOTER ─── */}
-        <footer className="px-4 sm:px-8 py-4 sm:py-6 bg-white border-t-2 sm:border-t-4 border-black flex items-center justify-between shrink-0 gap-4">
-          <div className="flex gap-2 sm:gap-4">
-             <Button type="button" variant="outline" onClick={onClose} className="h-10 sm:h-14 px-4 sm:px-10 border-2 sm:border-4 border-black rounded-none font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-black hover:text-white transition-all">Cancel</Button>
-             <Button type="button" onClick={resetForm} variant="outline" className="h-10 sm:h-14 px-3 sm:px-6 border-2 sm:border-4 border-black rounded-none font-black uppercase text-[10px] sm:text-xs tracking-widest hover:bg-gray-100 hidden sm:flex"><RotateCcw size={16} /></Button>
+        <footer className="px-6 sm:px-10 py-5 sm:py-8 bg-[#0A111A] border-t border-white/5 flex items-center justify-between shrink-0 gap-4">
+          <div className="flex gap-3 sm:gap-4">
+             <Button type="button" variant="ghost" onClick={onClose} className="h-12 sm:h-14 px-6 sm:px-10 font-bold uppercase text-[10px] sm:text-xs tracking-widest text-white/30 hover:text-white hover:bg-white/5 transition-all">Cancel</Button>
+             <Button type="button" onClick={resetForm} variant="outline" className="h-12 sm:h-14 px-4 sm:px-6 border-white/10 bg-white/5 rounded-sm font-bold uppercase text-[10px] sm:text-xs tracking-widest text-white/40 hover:bg-white/10 hidden sm:flex"><RotateCcw size={16} /></Button>
           </div>
           <div className="flex flex-1 sm:flex-none">
              <Button 
                type="submit" 
                form="manifest-form" 
                disabled={loading} 
-               className="w-full sm:w-auto h-10 sm:h-14 px-4 sm:px-16 bg-gradient-to-r from-[#0A2F6E] to-[#061B3D] hover:from-[#2B7FFF] hover:to-[#0A2F6E] text-white rounded-none font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-[4px_4px_0px_rgba(0,0,0,0.1)] sm:shadow-[8px_8px_0px_rgba(10,47,110,0.2)] transition-all duration-500 relative overflow-hidden group/btn"
+               className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-16 bg-accent hover:bg-accent/90 text-navy rounded-sm font-bold uppercase text-[10px] sm:text-xs tracking-widest shadow-[0_0_30px_rgba(255,190,0,0.2)] transition-all duration-300 relative overflow-hidden group/btn"
              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover/btn:animate-shimmer" />
                 <span className="relative z-10 flex items-center justify-center">
-                  {loading ? <Loader2 className="animate-spin mr-2" /> : <Printer size={16} className="sm:mr-3 mr-2" />} 
+                  {loading ? <Loader2 className="animate-spin mr-3" /> : <Shield size={18} className="sm:mr-3 mr-2" />} 
                   <span className="truncate">{shipment ? 'Authorize Update' : 'Initialize Manifest'}</span>
                 </span>
              </Button>
