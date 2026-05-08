@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { 
   Package, Plus, Search, Filter, MoreHorizontal, 
   Edit2, Trash2, Calendar, MapPin, User, Mail,
@@ -31,6 +31,21 @@ const STATUS_MAP: Record<number, { label: string, color: string, bg: string }> =
 };
 
 export default function ShipmentsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFB]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-[#0081C9] animate-spin" />
+          <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Loading...</p>
+        </div>
+      </div>
+    }>
+      <ShipmentsContent />
+    </Suspense>
+  );
+}
+
+function ShipmentsContent() {
   const supabase = createClient();
   const [shipments, setShipments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
