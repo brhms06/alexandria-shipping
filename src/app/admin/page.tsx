@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, Mail, Loader2, ShieldCheck, ArrowRight, Globe } from "lucide-react";
+import { Lock, Mail, Loader2, ShieldCheck, ArrowRight, Globe, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function AdminLogin() {
   const supabase = createClient();
@@ -41,171 +42,166 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex font-sans selection:bg-navy selection:text-white">
+    <div className="min-h-screen flex font-sans selection:bg-blue-100 selection:text-[#0081C9] bg-[#F8FAFB] relative overflow-hidden">
       
-      {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-navy items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/hero-bg.png"
-            alt="Maritime Operations"
-            fill
-            className="object-cover opacity-20 grayscale"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-navy/90 via-navy/80 to-navy/95" />
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px] -mr-40 -mt-40 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-100 rounded-full blur-[120px] -ml-40 -mb-40 pointer-events-none" />
+      
+      {/* Left Panel - Hero Branding */}
+      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center p-12 overflow-hidden border-r border-slate-100 bg-white">
+        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
+           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#0081C9 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }} />
         </div>
 
-        <div className="relative z-10 max-w-lg px-16">
-          <div className="relative w-64 h-20 mb-12">
-            <Image
-              src="/alexandria-shipping-logo.png"
-              alt="Alexandria Shipping Logo"
-              fill
-              className="object-contain brightness-0 invert"
-            />
-          </div>
-          <h2 className="text-4xl font-bold text-white leading-tight mb-6 tracking-tight">
-            Command Center<br />
-            <span className="text-white/60">Administrative Portal</span>
-          </h2>
-          <p className="text-white/40 text-sm leading-relaxed mb-12">
-            Manage shipments, track logistics operations, and oversee the entire Alexandria Maritime network from one centralized dashboard.
-          </p>
-          <div className="flex items-center gap-8">
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold text-white">24/7</span>
-              <span className="text-[10px] font-bold text-accent uppercase tracking-widest">Monitoring</span>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 max-w-lg"
+        >
+          <div className="flex items-center gap-4 mb-10">
+            <div className="w-16 h-16 bg-[#0081C9] rounded-[22px] flex items-center justify-center shadow-2xl shadow-blue-200">
+              <Package size={32} className="text-white" />
             </div>
-            <div className="w-px h-10 bg-white/20" />
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold text-white">150+</span>
-              <span className="text-[10px] font-bold text-accent uppercase tracking-widest">Global Ports</span>
-            </div>
-            <div className="w-px h-10 bg-white/20" />
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold text-white">99.8%</span>
-              <span className="text-[10px] font-bold text-accent uppercase tracking-widest">Uptime</span>
+            <div>
+              <h2 className="text-3xl font-black text-slate-900 tracking-tighter">Alexandria</h2>
+              <p className="text-[10px] font-black text-[#0081C9] uppercase tracking-[0.3em]">Logistics Management</p>
             </div>
           </div>
-        </div>
+          
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h1 className="text-6xl font-black text-slate-900 leading-[0.9] tracking-tighter">
+                Control<br />
+                <span className="text-[#0081C9]">Center</span>
+              </h1>
+              <p className="text-slate-400 text-lg font-medium leading-relaxed max-w-sm">
+                The unified platform for global tracking, asset management, and shipment oversight.
+              </p>
+            </div>
 
-        {/* Decorative element */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent" />
+            <div className="grid grid-cols-2 gap-10 pt-10 border-t border-slate-100">
+              <div className="flex flex-col">
+                <span className="text-3xl font-black text-slate-900 tracking-tight">24/7</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Operational Support</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-3xl font-black text-slate-900 tracking-tight">SECURED</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">End-to-End Encryption</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className="flex-1 flex items-center justify-center bg-[#050B14] p-6 sm:p-12 relative overflow-hidden">
-        
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle, #FFBE00 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] -mr-64 -mt-64" />
-
-        <div className="w-full max-w-md relative z-10">
-          
-          {/* Mobile logo */}
-          <div className="lg:hidden mb-10">
-            <div className="relative w-52 h-14 mb-4">
-              <Image
-                src="/alexandria-shipping-logo.png"
-                alt="Alexandria Shipping Logo"
-                fill
-                className="object-contain object-left brightness-0 invert"
-                priority
-              />
-            </div>
-          </div>
-
+      <div className="flex-1 flex items-center justify-center p-8 sm:p-16 relative">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="w-full max-w-md"
+        >
           {/* Header */}
-          <div className="mb-10">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-0.5 w-10 bg-accent" />
-              <span className="text-[10px] font-bold text-accent uppercase tracking-[0.3em]">Secure Access</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-3 italic">
-              Admin Login
+          <div className="mb-12">
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-3">
+              Operator Sign-in
             </h1>
-            <p className="text-white/30 text-sm font-medium tracking-wide">
-              Sign in to access the Alexandria command console.
+            <p className="text-slate-400 text-sm font-bold uppercase tracking-wider">
+              Enter your credentials to access the dashboard
             </p>
           </div>
 
           {/* Error */}
           {error && (
-            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold uppercase tracking-widest flex items-center gap-3 rounded-sm">
-              <ShieldCheck size={18} className="shrink-0" />
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 p-5 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-2xl flex items-center gap-4 shadow-sm"
+            >
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
               {error}
-            </div>
+            </motion.div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-8">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
+              <Label htmlFor="email" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                 Email Address
               </Label>
-              <div className="relative">
+              <div className="relative group">
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@alexandriashipping.com"
+                  placeholder="admin@alexandria.io"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={loading}
-                  className="h-14 pl-12 bg-white/5 border-white/10 rounded-sm text-white font-bold text-sm focus-visible:ring-accent placeholder:text-white/10"
+                  className="h-16 pl-14 bg-white border-slate-200 rounded-[20px] text-slate-900 font-bold text-base focus-visible:ring-[#0081C9] shadow-sm transition-all group-hover:border-[#0081C9]/30"
                 />
-                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                <Mail size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#0081C9] transition-colors" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
-                Password
+              <Label htmlFor="password" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                Security Password
               </Label>
-              <div className="relative">
+              <div className="relative group">
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  className="h-14 pl-12 bg-white/5 border-white/10 rounded-sm text-white font-bold text-sm focus-visible:ring-accent placeholder:text-white/10"
+                  className="h-16 pl-14 bg-white border-slate-200 rounded-[20px] text-slate-900 font-bold text-base focus-visible:ring-[#0081C9] shadow-sm transition-all group-hover:border-[#0081C9]/30"
                 />
-                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                <Lock size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#0081C9] transition-colors" />
               </div>
             </div>
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-16 bg-accent hover:bg-accent/90 text-navy font-bold uppercase tracking-[0.3em] text-[11px] rounded-sm shadow-2xl shadow-accent/10 transition-all group overflow-hidden relative"
+              className="w-full h-16 bg-[#0081C9] hover:bg-[#0081C9]/90 text-white font-black uppercase tracking-widest text-xs rounded-[20px] shadow-xl shadow-blue-200 transition-all active:scale-[0.98]"
             >
-              {loading ? (
-                <span className="flex items-center gap-3 relative z-10">
-                  {loading ? <Loader2 size={18} className="animate-spin" /> : null} 
-                  {loading ? 'Authenticating...' : 'Establish Secure Connection'}
-                  {!loading && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
-                </span>
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              )}
+              <span className="flex items-center justify-center gap-4">
+                {loading ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Enter Dashboard</span>
+                    <ArrowRight size={18} />
+                  </>
+                )}
+              </span>
             </Button>
           </form>
 
           {/* Footer */}
-          <div className="mt-10 pt-8 border-t border-white/5 flex items-center justify-between">
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
-              Encrypted Tunnel • Station 01
-            </p>
-            <div className="flex items-center gap-2 text-emerald-500">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-widest">Online</span>
+          <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
+            <div className="flex flex-col">
+              <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                System Status
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]" />
+                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Global Network Online</span>
+              </div>
             </div>
+            <p className="text-[10px] font-bold text-slate-200 uppercase tracking-widest">v3.4.1</p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
 }
+

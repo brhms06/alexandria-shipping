@@ -3,13 +3,12 @@
 import { useEffect, useState, use } from "react";
 import { createClient } from "@/lib/supabase-client";
 import { 
-  Ship, Package, MapPin, Clock, Shield, Search, Globe, Zap, 
+  Ship, Package, MapPin, Clock, ShieldCheck, Search, Globe, Zap, 
   CheckCircle, ArrowRight, Navigation, Phone, Mail, FileText, 
   Truck, Plane, Anchor, Info, AlertCircle, ChevronLeft, User, 
   Printer, Share2, Download, ExternalLink, Map as MapIcon, 
-  ChevronDown, ArrowLeft
+  ChevronDown, ArrowLeft, Building2, Calendar
 } from "lucide-react";
-import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,20 +17,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import TrackingMap from "@/components/TrackingMap";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
-// Dynamically import Leaflet with no SSR
-const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
-const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
-const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
-const Polyline = dynamic(() => import("react-leaflet").then(mod => mod.Polyline), { ssr: false });
-
-const STATUS_MAP: Record<number, { label: string; color: string }> = {
-  1: { label: "ORDER PLACED", color: "#64748b" },
-  2: { label: "PACKED", color: "#8b5cf6" },
-  3: { label: "IN TRANSIT", color: "#0A2F6E" },
-  4: { label: "OUT FOR DELIVERY", color: "#f59e0b" },
-  5: { label: "DELIVERED", color: "#10b981" },
-  6: { label: "HELD AT PORT", color: "#ef4444" },
+const STATUS_MAP: Record<number, { label: string; color: string; bgColor: string }> = {
+  1: { label: "Order Received", color: "#00458B", bgColor: "#E0EEFF" },
+  2: { label: "In Preparation", color: "#00458B", bgColor: "#E0EEFF" },
+  3: { label: "In Transit", color: "#00458B", bgColor: "#E0EEFF" },
+  4: { label: "Out for Delivery", color: "#00458B", bgColor: "#E0EEFF" },
+  5: { label: "Delivered", color: "#10B981", bgColor: "#D1FAE5" },
+  6: { label: "Held at Port", color: "#EF4444", bgColor: "#FEE2E2" },
 };
 
 export default function TrackingPage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
@@ -65,32 +61,36 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
     const doc = new jsPDF();
     
     // Header
-    doc.setFillColor(10, 47, 110); // Deep Navy
+    doc.setFillColor(0, 69, 139); // Alexandria Blue
     doc.rect(0, 0, 210, 40, 'F');
     
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
+    doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.text("ALEXANDRIA LOGISTICS", 20, 25);
+    doc.text("ALEXANDRIA SHIPPING", 20, 25);
     
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text("OFFICIAL CARGO MANIFEST & RECEIPT", 20, 32);
+    doc.text("OFFICIAL SHIPMENT MANIFEST & TRACKING REPORT", 20, 32);
     
     // Shipment ID
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
     doc.text(`Tracking ID: ${shipment.tracking_id}`, 20, 55);
     doc.setFontSize(10);
-    doc.text(`Issued On: ${new Date().toLocaleString()}`, 20, 62);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Report Generated: ${new Date().toLocaleString()}`, 20, 62);
     
     // Status Box
-    doc.setDrawColor(200, 200, 200);
-    doc.rect(140, 48, 50, 18);
+    doc.setDrawColor(226, 232, 240);
+    doc.setFillColor(248, 250, 252);
+    doc.rect(140, 48, 55, 20, 'FD');
     doc.setFont("helvetica", "bold");
-    doc.text("STATUS", 145, 54);
-    doc.setTextColor(10, 47, 110);
-    doc.text(STATUS_MAP[shipment.status]?.label || "PENDING", 145, 61);
+    doc.text("CURRENT STATUS", 145, 55);
+    doc.setTextColor(0, 69, 139);
+    doc.setFontSize(12);
+    doc.text(STATUS_MAP[shipment.status]?.label || "PENDING", 145, 63);
     
     // Sender/Receiver Table
     (doc as any).autoTable({
@@ -101,280 +101,347 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
         `${shipment.receiver_name}\n${shipment.receiver_address}`
       ]],
       theme: 'grid',
-      headStyles: { fillColor: [10, 47, 110] },
+      headStyles: { fillColor: [0, 69, 139], textColor: [255, 255, 255] },
       styles: { fontSize: 10, cellPadding: 8 }
     });
     
     // Package Details
     (doc as any).autoTable({
       startY: (doc as any).lastAutoTable.finalY + 10,
-      head: [['LOGISTICS DETAILS', 'VALUE']],
+      head: [['SHIPMENT PARAMETERS', 'VALUE']],
       body: [
-        ['Service Level', shipment.service_level || 'Standard Express'],
-        ['Transport Method', shipment.transport_type?.toUpperCase() || 'SEA'],
+        ['Service Level', shipment.service_level || 'Standard Freight'],
+        ['Transport Mode', shipment.transport_type?.toUpperCase() || 'SEA'],
         ['Gross Weight', `${shipment.weight} KG`],
-        ['Total Volume', `${shipment.volume} M3`],
-        ['Estimated Delivery', shipment.estimated_delivery || 'TBD']
+        ['Volume', `${shipment.volume} M3`],
+        ['Est. Delivery', shipment.estimated_delivery || 'Pending Update']
       ],
       theme: 'striped',
-      headStyles: { fillColor: [10, 47, 110] }
+      headStyles: { fillColor: [0, 69, 139], textColor: [255, 255, 255] }
     });
 
     // History
     if (updates.length > 0) {
       (doc as any).autoTable({
         startY: (doc as any).lastAutoTable.finalY + 10,
-        head: [['DATE', 'LOCATION / STATUS', 'MESSAGE']],
+        head: [['DATE/TIME', 'STATUS', 'LOCATION/MESSAGE']],
         body: updates.map(u => [
-          new Date(u.created_at).toLocaleDateString(),
-          u.status || 'Update',
-          u.message || u.location || 'Logged'
+          new Date(u.created_at).toLocaleString(),
+          u.status || 'UPDATE',
+          u.message || u.location || '-'
         ]),
-        headStyles: { fillColor: [10, 47, 110] }
+        headStyles: { fillColor: [0, 69, 139], textColor: [255, 255, 255] }
       });
     }
     
-    doc.save(`Alexandria_Receipt_${shipment.tracking_id}.pdf`);
+    doc.save(`ALEX_SHIPMENT_${shipment.tracking_id}.pdf`);
+  };
+
+  const getTransportIcon = (type: string) => {
+    switch (type?.toLowerCase()) {
+      case 'air': return <Plane size={24} className="text-blue-600" />;
+      case 'land': return <Truck size={24} className="text-blue-600" />;
+      case 'sea':
+      default: return <Ship size={24} className="text-blue-600" />;
+    }
   };
 
   if (loading) return (
     <div className="h-screen w-full flex items-center justify-center bg-white">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-10 h-10 border-4 border-[#0A2F6E] border-t-transparent rounded-full animate-spin" />
-        <p className="font-bold text-[#0A2F6E]">Loading Manifest Data...</p>
+      <div className="flex flex-col items-center gap-6">
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Retrieving Shipment Data...</p>
       </div>
     </div>
   );
 
+  if (!shipment) return (
+    <div className="h-screen w-full flex items-center justify-center bg-white">
+       <div className="text-center">
+          <AlertCircle size={48} className="text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Shipment Not Found</h2>
+          <p className="text-slate-500 mb-6">The tracking ID you provided does not exist in our records.</p>
+          <Button onClick={() => window.location.href='/tracking'}>Return to Search</Button>
+       </div>
+    </div>
+  );
+
   const status = STATUS_MAP[shipment.status] || STATUS_MAP[1];
-  const L = typeof window !== 'undefined' ? require('leaflet') : null;
-  const customIcon = L ? new L.Icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  }) : null;
 
   return (
-    <div className="min-h-screen w-full bg-white text-black flex flex-col font-sans">
-      
-      {/* ─── 1. CORPORATE HEADER ─── */}
-      <header className="bg-navy text-white py-8 px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden border-b border-white/5">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/hero-bg.png"
-            alt="Background"
-            fill
-            className="object-cover opacity-10 grayscale"
-          />
-        </div>
-        
-        <div className="flex items-center gap-6 relative z-10">
-          <div className="w-14 h-14 bg-accent flex items-center justify-center text-white shadow-xl">
-            <Ship size={32} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight uppercase">Alexandria <span className="text-accent">Tracking</span></h1>
-            <p className="text-[10px] font-bold tracking-[0.3em] text-white/50">SECURE GLOBAL LOGISTICS PORTAL</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-4 w-full md:w-auto relative z-10">
-          <Button 
-            onClick={() => window.location.href='/tracking'} 
-            variant="outline" 
-            className="flex-1 md:flex-none border-white/20 text-white hover:bg-white/10 rounded-none h-14 px-8 font-bold uppercase text-[10px] tracking-widest bg-transparent"
-          >
-            <ArrowLeft size={16} className="mr-2" /> New Search
-          </Button>
-          <Button 
-            onClick={generatePDF} 
-            className="flex-1 md:flex-none bg-accent hover:bg-accent/90 text-white rounded-none h-14 px-10 font-bold uppercase text-[10px] tracking-widest shadow-xl"
-          >
-            <Printer size={16} className="mr-2" /> Export Manifest
-          </Button>
-        </div>
-      </header>
+    <div className="min-h-screen w-full bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-primary selection:text-white relative overflow-x-hidden">
+      <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-6 md:p-12 relative">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-navy/5 blur-[150px] -z-10 rounded-full" />
+      <main className="flex-1 max-w-7xl mx-auto w-full p-6 md:p-10 pt-32">
         
-        <AnimatePresence mode="wait">
-          {view === 'info' ? (
-            <motion.div 
-              key="info"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-10"
-            >
-              {/* STATUS BAR */}
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b-2 border-slate-200 pb-10 gap-8 relative">
-                <div className="relative z-10">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-4">Current Manifest Status</p>
-                  <div className="flex items-center gap-6">
-                    <h2 className="text-4xl md:text-6xl font-extrabold text-navy uppercase tracking-tight italic">{status.label}</h2>
-                    <div className="w-3 h-3 bg-accent rounded-full animate-ping hidden sm:block" />
-                  </div>
-                </div>
-                <div className="text-left md:text-right relative z-10">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 mb-4">Estimated Arrival</p>
-                  <p className="text-2xl md:text-4xl font-extrabold text-navy tracking-tight">{shipment.estimated_delivery || "DECEMBER 24, 2026"}</p>
-                </div>
+        {/* Top Header Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12 mb-8">
+           <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
+              <div className="space-y-4">
+                 <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest">
+                    <Globe size={14} /> Global Tracking System
+                 </div>
+                 <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+                    Shipment <span className="text-blue-600">#{shipment.tracking_id}</span>
+                 </h1>
+                 <div className="flex flex-wrap gap-3 pt-2">
+                    <Badge className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider" style={{ backgroundColor: status.bgColor, color: status.color }}>
+                       {status.label}
+                    </Badge>
+                    <Badge variant="outline" className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border-slate-200 text-slate-500">
+                       {shipment.service_level || 'Standard Freight'}
+                    </Badge>
+                 </div>
               </div>
 
-              {/* ACTION BUTTONS */}
-              <div className="flex flex-wrap gap-3 sm:gap-4">
+              <div className="flex flex-wrap gap-4 w-full lg:w-auto">
                  <Button 
-                   onClick={() => setView('map')} 
-                   className="w-full sm:w-auto h-14 sm:h-16 px-6 sm:px-10 bg-gradient-to-r from-[#0A2F6E] to-[#061B3D] hover:from-[#2B7FFF] hover:to-[#0A2F6E] text-white font-black uppercase tracking-widest text-[10px] sm:text-xs rounded-none flex items-center justify-center gap-3 shadow-xl transition-all duration-500 relative overflow-hidden group/map"
+                   onClick={() => setView(view === 'info' ? 'map' : 'info')}
+                   className="flex-1 lg:flex-none h-12 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-all flex items-center gap-2"
                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover/map:animate-shimmer" />
-                    <MapIcon size={18} className="relative z-10" /> <span className="relative z-10">View Live Map</span>
+                    {view === 'info' ? <><MapIcon size={18} /> View on Map</> : <><Info size={18} /> Shipment Details</>}
                  </Button>
-                 <Button variant="outline" className="w-full sm:w-auto h-14 sm:h-16 px-6 sm:px-10 border-4 border-black text-black font-black uppercase tracking-widest text-[10px] sm:text-xs rounded-none flex items-center justify-center bg-white hover:bg-black hover:text-white transition-all shadow-[6px_6px_0px_rgba(0,0,0,0.1)]">
-                    <Phone size={16} className="mr-2" /> Contact Station
+                 <Button 
+                   onClick={generatePDF}
+                   variant="outline"
+                   className="flex-1 lg:flex-none h-12 px-6 border-slate-200 text-slate-700 hover:bg-slate-50 font-bold rounded-lg transition-all flex items-center gap-2"
+                 >
+                    <Printer size={18} /> Export Manifest
                  </Button>
               </div>
+           </div>
 
-              {/* TWO COLUMN INFO GRID */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-slate-200 border border-slate-200">
-                
-                {/* SENDER COLUMN */}
-                <div className="bg-white p-10 md:p-12 space-y-8">
-                  <div className="flex items-center gap-4 text-slate-400">
-                    <div className="w-10 h-10 bg-slate-50 flex items-center justify-center shrink-0"><User size={20}/></div>
-                    <h3 className="font-bold uppercase tracking-widest text-[10px]">Consignor Details</h3>
-                  </div>
-                  <div className="space-y-3">
-                    <p className="text-2xl md:text-3xl font-bold text-navy leading-tight">{shipment.sender_name}</p>
-                    <p className="text-lg text-slate-500 leading-relaxed max-w-sm font-light">{shipment.sender_address}</p>
-                    <p className="font-mono text-xs font-medium text-slate-400 mt-6 tracking-widest">{shipment.customer_phone || "CONTACT ENCRYPTED"}</p>
-                  </div>
-                </div>
+           <Separator className="my-10" />
 
-                {/* RECEIVER COLUMN */}
-                <div className="bg-white p-10 md:p-12 space-y-8">
-                  <div className="flex items-center gap-4 text-slate-400">
-                    <div className="w-10 h-10 bg-slate-50 flex items-center justify-center shrink-0"><Navigation size={20}/></div>
-                    <h3 className="font-bold uppercase tracking-widest text-[10px]">Consignee Details</h3>
-                  </div>
-                  <div className="space-y-3">
-                    <p className="text-2xl md:text-3xl font-bold text-navy leading-tight">{shipment.receiver_name}</p>
-                    <p className="text-lg text-slate-500 leading-relaxed max-w-sm font-light">{shipment.receiver_address}</p>
-                    <p className="font-mono text-xs font-medium text-slate-400 mt-6 tracking-widest">VERIFIED DISCHARGE POINT</p>
-                  </div>
-                </div>
-
+           {/* Quick Stats Grid */}
+           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="space-y-1">
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estimated Delivery</p>
+                 <div className="flex items-center gap-2">
+                    <Calendar size={16} className="text-blue-600" />
+                    <p className="text-xl font-bold text-slate-900">{shipment.estimated_delivery || "Updating..."}</p>
+                 </div>
               </div>
+              <div className="space-y-1">
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Transport Mode</p>
+                 <div className="flex items-center gap-2">
+                    {getTransportIcon(shipment.transport_type)}
+                    <p className="text-xl font-bold text-slate-900 uppercase">{shipment.transport_type || "SEA"}</p>
+                 </div>
+              </div>
+              <div className="space-y-1">
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Weight / Volume</p>
+                 <div className="flex items-center gap-2">
+                    <Package size={16} className="text-blue-600" />
+                    <p className="text-xl font-bold text-slate-900">{shipment.weight} KG / {shipment.volume} M³</p>
+                 </div>
+              </div>
+              <div className="space-y-1">
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Last Update</p>
+                 <div className="flex items-center gap-2">
+                    <Clock size={16} className="text-blue-600" />
+                    <p className="text-xl font-bold text-slate-900">{new Date(shipment.updated_at).toLocaleDateString()}</p>
+                 </div>
+              </div>
+           </div>
+        </div>
 
-              {/* THE JOURNEY PATH */}
-              <div className="bg-slate-50 border border-slate-100 p-8 md:p-16">
-                <h3 className="font-bold uppercase tracking-[0.3em] text-[10px] text-slate-400 mb-12">Logistics Journey Path</h3>
-                
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-12 md:gap-16 relative">
-                  {/* Background Line */}
-                  <div className="hidden md:block absolute top-12 left-12 right-12 h-[2px] bg-slate-200 -z-10" />
+        <AnimatePresence mode="wait">
+           {view === 'info' ? (
+              <motion.div 
+                key="info"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+              >
+                 {/* Left Column: Details */}
+                 <div className="lg:col-span-2 space-y-8">
+                    {/* Journey Path */}
+                    <Card className="border-none shadow-sm overflow-hidden">
+                       <CardContent className="p-0">
+                          <div className="bg-slate-900 p-6 text-white flex items-center justify-between">
+                             <h3 className="font-bold flex items-center gap-2">
+                                <Navigation size={18} className="text-blue-400" /> Shipment Progress
+                             </h3>
+                             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live Synchronization</span>
+                          </div>
+                          <div className="p-10 md:p-16">
+                             <div className="flex flex-col md:flex-row items-center justify-between gap-12 relative">
+                                <div className="hidden md:block absolute top-10 left-10 right-10 h-1 bg-slate-100 -z-10" />
 
-                  {[
-                    { label: "Origin Port", location: shipment.sender_address.split(',')[0], icon: Ship, active: true },
-                    { label: "Current Point", location: shipment.current_location_name || "In Transit", icon: Navigation, active: true, highlighted: true },
-                    { label: "Final Port", location: shipment.receiver_address.split(',')[0], icon: Anchor, active: false },
-                  ].map((point, i) => (
-                    <div key={i} className="flex md:flex-col items-center gap-6 md:gap-6 md:text-center flex-1 w-full">
-                      <div className={`w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-none border-2 transition-all shrink-0 ${point.highlighted ? 'bg-navy border-navy text-white shadow-2xl scale-110' : 'bg-white border-slate-200 text-slate-300'}`}>
-                        <point.icon size={32} className="relative z-10" />
-                      </div>
-                      <div className="flex-1">
-                        <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${point.highlighted ? 'text-accent' : 'text-slate-400'}`}>{point.label}</p>
-                        <p className={`text-xl font-bold ${point.highlighted ? 'text-navy' : 'text-slate-900'}`}>{point.location}</p>
-                      </div>
+                                {[
+                                  { 
+                                    label: "Origin", 
+                                    location: shipment.sender_address?.split(',')[0] || "Origin", 
+                                    icon: Building2, 
+                                    active: true,
+                                    completed: shipment.current_stop_index >= 0 || shipment.status >= 3
+                                  },
+                                  { 
+                                    label: "In Transit", 
+                                    location: shipment.current_stop_index === -1 
+                                      ? "Departed" 
+                                      : shipment.current_stop_index >= (shipment.stops?.length || 0)
+                                        ? "At Hub"
+                                        : shipment.stops?.[shipment.current_stop_index]?.name || "In Transit", 
+                                    icon: MapPin, 
+                                    active: shipment.status >= 3, 
+                                    completed: shipment.status >= 5
+                                  },
+                                  { 
+                                    label: "Destination", 
+                                    location: shipment.receiver_address?.split(',')[0] || "Destination", 
+                                    icon: Anchor, 
+                                    active: shipment.status >= 5,
+                                    completed: shipment.status >= 5
+                                  },
+                                ].map((point, i) => (
+                                  <div key={i} className="flex flex-col items-center gap-4 text-center flex-1 w-full group">
+                                    <div className={`w-20 h-20 rounded-full flex items-center justify-center border-4 transition-all duration-500 relative ${point.active ? 'bg-blue-600 border-blue-100 text-white' : 'bg-white border-slate-100 text-slate-300'}`}>
+                                       {point.active && !point.completed && <div className="absolute inset-0 bg-blue-600 rounded-full animate-ping opacity-20" />}
+                                       <point.icon size={28} />
+                                       {point.completed && <div className="absolute -top-1 -right-1 bg-emerald-500 text-white rounded-full p-1 border-2 border-white"><CheckCircle size={12} /></div>}
+                                    </div>
+                                    <div className="space-y-1">
+                                       <p className={`text-[10px] font-bold uppercase tracking-widest ${point.active ? 'text-blue-600' : 'text-slate-400'}`}>{point.label}</p>
+                                       <p className={`text-base font-bold ${point.active ? 'text-slate-900' : 'text-slate-400'}`}>{point.location}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                             </div>
+                          </div>
+                       </CardContent>
+                    </Card>
+
+                    {/* Timeline History */}
+                    <div className="space-y-6">
+                       <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                          <Clock size={20} className="text-blue-600" /> Shipment History
+                       </h3>
+                       <div className="space-y-4">
+                          {updates.length > 0 ? updates.map((update, i) => (
+                             <motion.div 
+                               initial={{ opacity: 0, x: -10 }}
+                               animate={{ opacity: 1, x: 0 }}
+                               transition={{ delay: i * 0.1 }}
+                               key={i} 
+                               className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex gap-6"
+                             >
+                                <div className="flex flex-col items-center">
+                                   <div className={`w-3 h-3 rounded-full mt-1.5 ${i === 0 ? 'bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.4)]' : 'bg-slate-200'}`} />
+                                   {i !== updates.length - 1 && <div className="w-0.5 flex-1 bg-slate-100 my-2" />}
+                                </div>
+                                <div className="space-y-2 flex-1">
+                                   <div className="flex items-center justify-between">
+                                      <p className="font-bold text-slate-900">{update.status || shipment.status_name}</p>
+                                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{new Date(update.created_at).toLocaleString()}</span>
+                                   </div>
+                                   <p className="text-sm text-slate-500 leading-relaxed">{update.message || update.location || "Operational update verified at logistics hub."}</p>
+                                </div>
+                             </motion.div>
+                          )) : (
+                             <div className="p-12 text-center bg-white rounded-xl border border-dashed border-slate-200">
+                                <Clock size={40} className="text-slate-200 mx-auto mb-4" />
+                                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Awaiting first status update...</p>
+                             </div>
+                          )}
+                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                 </div>
 
-              {/* TRACKING HISTORY TABLE */}
-              <div className="space-y-8">
-                <h3 className="font-bold uppercase tracking-[0.3em] text-[10px] text-slate-400">Activity History Log</h3>
-                <div className="border border-slate-200 overflow-x-auto shadow-sm">
-                  <table className="w-full text-left min-w-[600px] md:min-w-0">
-                    <thead className="bg-navy text-white text-[10px] font-bold uppercase tracking-[0.2em]">
-                      <tr>
-                        <th className="p-6">Date & Time</th>
-                        <th className="p-6">Operational Status</th>
-                        <th className="p-6">Details / Location</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 bg-white">
-                      {updates.length > 0 ? updates.map((update, i) => (
-                        <tr key={i} className="hover:bg-slate-50 transition-colors">
-                          <td className="p-6 text-sm font-medium text-slate-500">{new Date(update.created_at).toLocaleString()}</td>
-                          <td className="p-6 text-sm font-bold text-navy uppercase tracking-tight">{update.status || shipment.status_name}</td>
-                          <td className="p-6 text-sm font-light text-slate-600">{update.message || update.location || "Manifest Update Logged"}</td>
-                        </tr>
-                      )) : (
-                        <tr>
-                          <td colSpan={3} className="p-20 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Tracking initialized. Live updates pending...</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                 {/* Right Column: Info Cards */}
+                 <div className="space-y-8">
+                    {/* Consignor/Consignee Info */}
+                    <Card className="border-none shadow-sm">
+                       <CardContent className="p-8 space-y-8">
+                          <div className="space-y-4">
+                             <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                                <Building2 size={14} /> Consignor Details
+                             </div>
+                             <div>
+                                <p className="text-xl font-bold text-slate-900">{shipment.sender_name}</p>
+                                <p className="text-sm text-slate-500 mt-1 leading-relaxed">{shipment.sender_address}</p>
+                             </div>
+                          </div>
+                          <Separator />
+                          <div className="space-y-4">
+                             <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                                <MapPin size={14} /> Consignee Details
+                             </div>
+                             <div>
+                                <p className="text-xl font-bold text-slate-900">{shipment.receiver_name}</p>
+                                <p className="text-sm text-slate-500 mt-1 leading-relaxed">{shipment.receiver_address}</p>
+                             </div>
+                          </div>
+                       </CardContent>
+                    </Card>
 
-            </motion.div>
-          ) : (
-            <motion.div 
-              key="map"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="h-[75vh] w-full border-4 border-black relative bg-gray-100"
-            >
-              <div className="absolute top-6 left-6 z-[1000] flex flex-col gap-4">
-                <Button onClick={() => setView('info')} className="bg-black text-white rounded-none px-6 h-12 font-black uppercase text-[10px] tracking-widest shadow-2xl flex items-center gap-2">
-                  <ArrowLeft size={16} /> Revert to Details
-                </Button>
-                <div className="bg-white p-4 border-2 border-black shadow-xl">
-                   <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Current Vessel Positioning</p>
-                   <p className="text-sm font-black text-[#0A2F6E]">{shipment.current_location_name || "GPS Synchronizing..."}</p>
+                    {/* Support Card */}
+                    <Card className="bg-blue-600 text-white border-none shadow-xl relative overflow-hidden">
+                       <div className="absolute -right-8 -bottom-8 opacity-10">
+                          <Ship size={160} />
+                       </div>
+                       <CardContent className="p-8 relative z-10 space-y-6">
+                          <h4 className="text-xl font-bold">Need assistance?</h4>
+                          <p className="text-blue-100 text-sm leading-relaxed">
+                             Our dedicated customer service team is available to help you with any questions regarding this shipment.
+                          </p>
+                          <div className="space-y-4 pt-2">
+                             <a href="tel:+310101234567" className="flex items-center gap-3 text-sm font-bold hover:text-white transition-colors">
+                                <div className="p-2 bg-white/10 rounded-lg"><Phone size={16} /></div>
+                                +31 (0) 10 123 4567
+                             </a>
+                             <a href="mailto:support@alexandria-shipping.com" className="flex items-center gap-3 text-sm font-bold hover:text-white transition-colors">
+                                <div className="p-2 bg-white/10 rounded-lg"><Mail size={16} /></div>
+                                support@alexandria-shipping.com
+                             </a>
+                          </div>
+                       </CardContent>
+                    </Card>
+                 </div>
+              </motion.div>
+           ) : (
+              <motion.div 
+                key="map"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="h-[75vh] w-full rounded-2xl border border-slate-200 overflow-hidden relative shadow-2xl bg-white"
+              >
+                <div className="absolute top-6 left-6 z-[50] flex flex-col gap-4">
+                   <Button 
+                     onClick={() => setView('info')} 
+                     className="bg-white text-slate-900 hover:bg-slate-50 border border-slate-200 rounded-lg px-6 h-12 font-bold shadow-xl flex items-center gap-2 transition-all"
+                   >
+                     <ChevronLeft size={18} /> Back to Details
+                   </Button>
+                   <div className="bg-white/90 backdrop-blur-md p-6 border border-slate-200 rounded-xl shadow-xl max-w-xs">
+                      <div className="flex items-center gap-2 mb-2">
+                         <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Current Position</p>
+                      </div>
+                      <p className="text-lg font-bold text-slate-900 leading-tight">
+                         {shipment.current_location_name || "Synchronizing GPS..."}
+                      </p>
+                   </div>
                 </div>
-              </div>
 
-              {typeof window !== 'undefined' && (
-                <MapContainer 
-                  center={[shipment.current_lat || 59.3293, shipment.current_lng || 18.0686]} 
-                  zoom={12} 
-                  className="h-full w-full grayscale-[0.3]"
-                  zoomControl={false}
-                >
-                  <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                    attribution='&copy; Alexandria Logistics'
-                  />
-                  <Polyline 
-                    positions={[[shipment.sender_lat, shipment.sender_lng], [shipment.current_lat, shipment.current_lng]]}
-                    color="#0A2F6E" weight={6}
-                  />
-                  <Polyline 
-                    positions={[[shipment.current_lat, shipment.current_lng], [shipment.receiver_lat, shipment.receiver_lng]]}
-                    color="#0A2F6E" weight={4} dashArray="8, 12" opacity={0.3}
-                  />
-                  <Marker position={[shipment.current_lat, shipment.current_lng]} icon={customIcon!} />
-                </MapContainer>
-              )}
-            </motion.div>
-          )}
+                <TrackingMap 
+                  pickup={{ lat: shipment.sender_lat, lng: shipment.sender_lng, label: shipment.sender_address }}
+                  dropoff={{ lat: shipment.receiver_lat, lng: shipment.receiver_lng, label: shipment.receiver_address }}
+                  stops={shipment.stops || []}
+                  currentStopIndex={shipment.current_stop_index ?? -1}
+                  lastUpdate={shipment.updated_at}
+                  transportType={shipment.transport_type as any}
+                  interactive={true}
+                />
+              </motion.div>
+           )}
         </AnimatePresence>
       </main>
 
-      {/* FOOTER */}
-      <footer className="border-t border-gray-100 py-10 px-4 md:px-10 text-center">
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">
-          ALEXANDRIA LOGISTICS CO. • VERIFIED SHIPMENT {shipment.tracking_id} • ALL RIGHTS RESERVED 2026
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }

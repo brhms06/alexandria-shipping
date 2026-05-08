@@ -1,341 +1,183 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Truck, Ship, Plane, Navigation, Circle } from "lucide-react";
 
-interface TrackingMapProps {
-  pickup: { lat: number; lng: number; label: string };
-  dropoff: { lat: number; lng: number; label: string };
-  current?: { lat: number; lng: number; label: string };
-  onMapClick?: (lat: number, lng: number) => void;
-  transportType?: 'land' | 'sea' | 'air';
+interface Stop {
+  name: string;
+  lat: number;
+  lng: number;
+  status: 'pending' | 'completed';
 }
 
-export default function TrackingMap({ pickup, dropoff, current, onMapClick, transportType = 'land' }: TrackingMapProps) {
+interface TrackingMapProps {
+  pickup?: { lat: number; lng: number; label: string };
+  dropoff?: { lat: number; lng: number; label: string };
+  stops?: Stop[];
+  currentStopIndex?: number;
+  lastUpdate?: string;
+  transportType?: 'land' | 'sea' | 'air';
+  shipments?: any[];
+  interactive?: boolean;
+}
+
+export default function TrackingMap({ 
+  pickup, 
+  dropoff, 
+  stops = [],
+  currentStopIndex = -1,
+  lastUpdate,
+  transportType = 'land',
+  shipments, 
+  interactive = true 
+}: TrackingMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const layerGroupRef = useRef<L.LayerGroup | null>(null);
-  const clickHandlerRef = useRef(onMapClick);
+  const [animationProgress, setAnimationProgress] = useState(0);
 
+  // ─── ILLUSION OF MOVEMENT LOGIC ───
   useEffect(() => {
-    clickHandlerRef.current = onMapClick;
-  }, [onMapClick]);
+    if (currentStopIndex >= stops.length) return; // Delivered
+
+    const interval = setInterval(() => {
+      // Calculate a slow "progress" based on time since last update
+      // This is purely visual but stays consistent
+      const now = new Date().getTime();
+      const last = lastUpdate ? new Date(lastUpdate).getTime() : now;
+      const elapsedHours = (now - last) / (1000 * 60 * 60);
+      
+      // Every 1 hour of "real time", move 5% of the way, capped at 85%
+      // So it always looks like it's moving but never arrives
+      const progress = Math.min(0.85, (elapsedHours * 0.05) % 0.85);
+      setAnimationProgress(progress);
+    }, 10000); // Update every 10s
+
+    return () => clearInterval(interval);
+  }, [currentStopIndex, lastUpdate, stops.length]);
 
   useEffect(() => {
     if (!mapRef.current) return;
 
     if (!mapInstance.current) {
       const map = L.map(mapRef.current, {
-        scrollWheelZoom: false,
-        zoomControl: true,
+        scrollWheelZoom: interactive,
+        zoomControl: interactive,
         center: [20, 0],
         zoom: 2,
+        attributionControl: false,
       });
       mapInstance.current = map;
 
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
         maxZoom: 18,
       }).addTo(map);
 
       layerGroupRef.current = L.layerGroup().addTo(map);
-
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        if (clickHandlerRef.current) {
-          clickHandlerRef.current(e.latlng.lat, e.latlng.lng);
-        }
-      });
     }
 
     const map = mapInstance.current;
     const layerGroup = layerGroupRef.current;
-
     if (!layerGroup) return;
-
     layerGroup.clearLayers();
 
-    // Custom Icons
-    const originIcon = L.divIcon({
-      className: "leaflet-custom-marker",
-      html: `<div class="map-pin bg-white border-2 border-[#2B7FFF] text-[#2B7FFF] shadow-lg">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      </div>`,
-      iconSize: [36, 36],
-      iconAnchor: [18, 36],
-    });
+    // ─── HELPER: ICONS ───
+    const createTransportIcon = (type: string, isPulsing = false) => {
+      let iconHtml = '';
+      const color = '#2563eb'; // blue-600
+      
+      if (type === 'air') iconHtml = `<svg viewBox="0 0 24 24" width="24" height="24" stroke="${color}" stroke-width="2" fill="white" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5 20.5 3 18.5 3.5 17 5L13.5 8.5 5.3 6.7c-1.1-.3-2.3.4-2.5 1.5l-.2.8c-.1.5.1 1 .5 1.3L10.5 14l-4 4-2.5-.5c-.5-.1-1.1.1-1.4.5l-.5.5c-.3.3-.3.8 0 1.1l2.4 2.4c.3.3.8.3 1.1 0l.5-.5c.4-.3.6-.9.5-1.4l-.5-2.5 4-4 3.7 7.4c.3.4.8.6 1.3.5l.8-.2c1.1-.2 1.8-1.4 1.5-2.5z"/></svg>`;
+      else if (type === 'sea') iconHtml = `<svg viewBox="0 0 24 24" width="24" height="24" stroke="${color}" stroke-width="2" fill="white" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21c.6.5 1.2 1 2.5 1 1.4 0 2.5-1 3.5-1 1.2 0 1.9 1 3.5 1s2.3-1 3.5-1 1.9 1 3.5 1 2.4-1 3.5-1"/><path d="M19.38 20.51a3.12 3.12 0 0 0 .87-.51c.31-.27.57-.6.75-.97V11l-4-4-1.5-1.5a2 2 0 0 0-2.83 0L11 7V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v12.5c0 .37.18.7.46.91l.54.41c1.1.83 2.6.83 3.7 0l1.3-1a1.2 1.2 0 0 1 1.46 0l1.3 1c1.1.83 2.6.83 3.7 0l.92-.71Z"/></svg>`;
+      else iconHtml = `<svg viewBox="0 0 24 24" width="24" height="24" stroke="${color}" stroke-width="2" fill="white" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-2.098-2.622a1 1 0 0 0-.78-.354H15"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`;
 
-    const destinationIcon = L.divIcon({
-      className: "leaflet-custom-marker",
-      html: `<div class="map-pin bg-[#2D2430] text-white shadow-lg">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      </div>`,
-      iconSize: [36, 36],
-      iconAnchor: [18, 36],
-    });
-
-    const getShipmentIcon = () => {
       return L.divIcon({
-        className: "leaflet-shipment-marker",
-        html: `<div class="relative">
-          <div class="absolute -inset-4 bg-[#2B7FFF]/30 rounded-full animate-ping"></div>
-          <div class="map-pin bg-[#2B7FFF] text-white scale-125 shadow-2xl border-2 border-white ring-4 ring-[#2B7FFF]/10 relative z-10 transition-transform duration-500 hover:scale-150">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        className: "custom-transport-icon",
+        html: `
+          <div class="relative">
+            ${isPulsing ? '<div class="absolute -inset-2 bg-blue-500/20 rounded-full animate-ping"></div>' : ''}
+            <div class="relative bg-white p-1 rounded-lg border-2 border-blue-600 shadow-lg transition-all duration-500">
+              ${iconHtml}
+            </div>
           </div>
-        </div>`,
-        iconSize: [44, 44],
-        iconAnchor: [22, 44],
+        `,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
       });
     };
 
-    const hubIcon = L.divIcon({
-      className: "leaflet-hub-marker",
-      html: `<div class="w-3 h-3 bg-slate-400 rounded-full border-2 border-white shadow-sm opacity-60 hover:opacity-100 hover:scale-150 transition-all cursor-pointer"></div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
+    const createStopIcon = (isCompleted: boolean) => L.divIcon({
+      className: "custom-stop-icon",
+      html: `<div class="w-4 h-4 ${isCompleted ? 'bg-emerald-500' : 'bg-slate-300'} border-2 border-white rounded-full shadow-md"></div>`,
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
     });
 
-    // Add Origin & Destination
-    L.marker([pickup.lat || 0, pickup.lng || 0], { icon: originIcon })
-      .addTo(layerGroup)
-      .bindPopup(`<strong>Origin</strong><br/>${pickup.label}`);
+    // ─── RENDERING LOGIC ───
 
-    L.marker([dropoff.lat || 0, dropoff.lng || 0], { icon: destinationIcon })
-      .addTo(layerGroup)
-      .bindPopup(`<strong>Destination</strong><br/>${dropoff.label}`);
-
-    // Helper: Generate a path with intermediate points
-    const getPathPoints = (start: [number, number], end: [number, number], transport: string) => {
-      if (transport !== 'land') return [start, end];
-      
-      const points: [number, number][] = [start];
-      const segments = 30; // Increased segments for smoother terrain-like curves
-      
-      // Calculate a "control point" for the curve based on distance
-      const midLat = (start[0] + end[0]) / 2;
-      const midLng = (start[1] + end[1]) / 2;
-      
-      // Vertical distance difference to determine curvature direction
-      const distLat = Math.abs(end[0] - start[0]);
-      const distLng = Math.abs(end[1] - start[1]);
-      
-      for (let i = 1; i < segments; i++) {
-        const t = i / segments;
-        
-        // Quadratic Bezier Interpolation
-        // P = (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
-        
-        // Let's use a simpler sine-based "terrain" wobble on top of linear interpolation
-        const baseLat = start[0] + (end[0] - start[0]) * t;
-        const baseLng = start[1] + (end[1] - start[1]) * t;
-        
-        // Add "terrain" variance - mimicking roads following geography
-        const varianceFreq1 = Math.sin(t * Math.PI * 4) * 0.02;
-        const varianceFreq2 = Math.cos(t * Math.PI * 2) * 0.01;
-        const curveOffset = Math.sin(t * Math.PI) * (distLng * 0.1); // Broad curve
-        
-        const finalLat = baseLat + varianceFreq1 + varianceFreq2;
-        const finalLng = baseLng + curveOffset;
-        
-        points.push([finalLat, finalLng]);
-      }
-      
-      points.push(end);
-      return points;
-    };
-
-    // Draw Routes
-    if (current) {
-      const isLand = transportType === 'land';
-      
-      // 1. Covered Route (Solid Gold - Premium thick line)
-      const coveredPoints = getPathPoints([pickup.lat, pickup.lng], [current.lat, current.lng], transportType);
-      L.polyline(coveredPoints as L.LatLngExpression[], {
-        color: "#2B7FFF",
-        weight: 6,
-        opacity: 1,
-        lineJoin: 'round',
-        lineCap: 'round',
-      }).addTo(layerGroup);
-
-      // 2. Remaining Route (Animated Dotted Line)
-      const remainingPoints = getPathPoints([current.lat, current.lng], [dropoff.lat, dropoff.lng], transportType);
-      L.polyline(remainingPoints as L.LatLngExpression[], {
-        color: "#2D2430",
-        weight: 3,
-        opacity: 0.4,
-        dashArray: "10, 15",
-        lineJoin: 'round',
-        lineCap: 'round',
-        className: 'animated-path'
-      }).addTo(layerGroup);
-
-      // Add the animation CSS if not already present
-      if (!document.getElementById('map-animations')) {
-        const style = document.createElement('style');
-        style.id = 'map-animations';
-        style.innerHTML = `
-          @keyframes dash {
-            to {
-              stroke-dashoffset: -100;
-            }
-          }
-          .animated-path {
-            stroke-dasharray: 8, 12;
-            animation: dash 20s linear infinite;
-          }
-          .leaflet-shipment-marker .map-pin {
-            animation: float 3s ease-in-out infinite;
-          }
-          @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-          }
-        `;
-        document.head.appendChild(style);
-      }
-
-      // 3. Dynamic "Logistics Hubs" along the path
-      const pathForHubs = [...coveredPoints, ...remainingPoints];
-      pathForHubs.forEach((pt, idx) => {
-        if (idx % 10 === 0 && idx !== 0 && idx < pathForHubs.length - 1) {
-          const isCovered = idx < coveredPoints.length;
-          
-          L.marker(pt as L.LatLngExpression, { 
-            icon: L.divIcon({
-              className: "leaflet-hub-marker",
-              html: `<div class="group relative flex items-center justify-center">
-                <div class="w-3 h-3 ${isCovered ? 'bg-[#2B7FFF]' : 'bg-slate-300'} rounded-full border-2 border-white shadow-md transition-all hover:scale-150"></div>
-                <div class="absolute bottom-5 left-1/2 -translate-x-1/2 bg-[#2D2430] text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-all transform translate-y-1 group-hover:translate-y-0 z-[2000] font-bold tracking-tight">
-                  CHECKPOINT ${idx}
-                </div>
-              </div>`,
-              iconSize: [12, 12],
-              iconAnchor: [6, 6],
-            }) 
-          }).addTo(layerGroup);
-        }
-      });
-
-      // 4. Current Location Marker (The Package)
-      L.marker([current.lat || 0, current.lng || 0], { icon: getShipmentIcon(), zIndexOffset: 1000 })
-        .addTo(layerGroup)
-        .bindPopup(`<strong>Live Package</strong><br/>${current.label}`)
-        .openPopup();
-
-      // 5. Port Decorations (Nearby locations)
-      const portIcon = L.divIcon({
-        className: "leaflet-port-marker",
-        html: `<div class="w-4 h-4 bg-[#2D2430]/20 rounded-full border-2 border-[#2D2430]/30 flex items-center justify-center">
-          <div class="w-1.5 h-1.5 bg-[#2D2430]/40 rounded-full"></div>
-        </div>`,
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-      });
-
-      const portNodes = [
-        { lat: current.lat + 0.1, lng: current.lng - 0.15, name: "Alpha Hub" },
-        { lat: current.lat - 0.08, lng: current.lng + 0.2, name: "Omega Port" }
+    if (pickup && dropoff) {
+      const allPoints = [
+        { lat: pickup.lat, lng: pickup.lng, name: 'Origin', status: 'completed' },
+        ...stops,
+        { lat: dropoff.lat, lng: dropoff.lng, name: 'Destination', status: currentStopIndex >= stops.length ? 'completed' : 'pending' }
       ];
-      
-      portNodes.forEach(node => {
-        L.marker([node.lat, node.lng], { icon: portIcon })
+
+      // Draw Path
+      const pathCoordinates = allPoints.map(p => [p.lat, p.lng] as [number, number]);
+      L.polyline(pathCoordinates, {
+        color: "#e2e8f0",
+        weight: 3,
+        dashArray: "10, 10"
+      }).addTo(layerGroup);
+
+      // Draw Stops
+      allPoints.forEach((p, idx) => {
+        const isCompleted = idx <= currentStopIndex + 1; // currentStopIndex is -1 for origin
+        L.marker([p.lat, p.lng], { icon: createStopIcon(isCompleted) })
           .addTo(layerGroup)
-          .bindPopup(`<strong>Facility</strong><br/>${node.name}`);
+          .bindPopup(`<p class="font-bold text-slate-800">${p.name}</p>`);
       });
 
-    } else {
-      // Full Path if no current position
-      const fullPoints = getPathPoints([pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng], transportType);
-      L.polyline(fullPoints as L.LatLngExpression[], {
-        color: "#2D2430",
-        weight: 3,
-        opacity: 0.2,
-        dashArray: "10, 15",
-        lineJoin: 'round',
-        className: 'animated-path'
-      }).addTo(layerGroup);
+      // Calculate Current Position for Moving Icon
+      // If we are between idx and idx+1
+      const startIdx = currentStopIndex + 1;
+      const endIdx = startIdx + 1;
+
+      if (startIdx < allPoints.length - 1) {
+        const start = allPoints[startIdx];
+        const end = allPoints[endIdx];
+        
+        // Linear interpolation for "Illusion of Movement"
+        const curLat = start.lat + (end.lat - start.lat) * animationProgress;
+        const curLng = start.lng + (end.lng - start.lng) * animationProgress;
+
+        L.marker([curLat, curLng], { 
+          icon: createTransportIcon(transportType, true) 
+        }).addTo(layerGroup);
+
+        // Highlight completed path
+        const completedPath = [...pathCoordinates.slice(0, startIdx + 1), [curLat, curLng] as [number, number]];
+        L.polyline(completedPath, {
+          color: "#2563eb",
+          weight: 4
+        }).addTo(layerGroup);
+      } else if (currentStopIndex >= stops.length) {
+        // Delivered
+        L.polyline(pathCoordinates, { color: "#10b981", weight: 4 }).addTo(layerGroup);
+      }
+
+      const bounds = L.latLngBounds(pathCoordinates);
+      map.fitBounds(bounds, { padding: [100, 100] });
     }
 
-    // Fit Bounds
-    const allPoints: [number, number][] = [];
-    
-    if (pickup.lat && pickup.lng) allPoints.push([pickup.lat, pickup.lng]);
-    if (dropoff.lat && dropoff.lng) allPoints.push([dropoff.lat, dropoff.lng]);
-    if (current?.lat && current?.lng) allPoints.push([current.lat, current.lng]);
+    setTimeout(() => { map.invalidateSize(); }, 100);
 
-    if (allPoints.length > 0) {
-      const bounds = L.latLngBounds(allPoints);
-      if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [100, 100], animate: true });
-      }
-    } else {
-      map.setView([20, 0], 2);
-    }
-    
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
-
-  }, [pickup.lat, pickup.lng, dropoff.lat, dropoff.lng, current?.lat, current?.lng, transportType]);
-
-  useEffect(() => {
-    return () => {
-      if (mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
-      }
-    };
-  }, []);
+  }, [pickup, dropoff, stops, currentStopIndex, transportType, animationProgress, interactive]);
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-xl bg-[#f8f9fa]">
-      <div ref={mapRef} className="leaflet-map-container h-full w-full" />
-      
-      {/* Premium Map Legend Overlay */}
-      <div className="absolute bottom-4 left-4 z-[1000] hidden md:block">
-        <div className="bg-white/90 backdrop-blur-md p-3 rounded-xl shadow-2xl border border-gray-100 flex flex-col gap-2.5">
-          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-1.5">
-            Logistics Legend
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-[#2B7FFF] shadow-sm"></div>
-            <span className="text-[11px] font-semibold text-[#2D2430]">Covered Route</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex gap-1">
-              <div className="w-1.5 h-0.5 bg-[#2D2430]/30"></div>
-              <div className="w-1.5 h-0.5 bg-[#2D2430]/30"></div>
-            </div>
-            <span className="text-[11px] font-semibold text-[#2D2430]/60">Remaining Path</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-2.5 h-2.5 rounded-full bg-slate-300 border border-white"></div>
-            <span className="text-[11px] font-medium text-slate-500">Logistics Node</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 bg-[#2B7FFF] rounded-full flex items-center justify-center border border-white">
-               <div className="w-1 h-1 bg-white rounded-full"></div>
-            </div>
-            <span className="text-[11px] font-semibold text-[#2D2430]">Live Package</span>
-          </div>
-        </div>
-      </div>
-
-      <style jsx global>{`
-        .leaflet-container {
-          background: #f8f9fa !important;
-        }
-        .map-pin {
-          display: flex;
-          align-items: center;
-          justify-center;
-          border-radius: 50%;
-          width: 100%;
-          height: 100%;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-      `}</style>
+    <div className="relative h-full w-full overflow-hidden rounded-3xl border border-slate-100 bg-slate-50">
+      <div ref={mapRef} className="h-full w-full" />
     </div>
   );
 }

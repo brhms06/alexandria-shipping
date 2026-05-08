@@ -17,57 +17,67 @@ const getIcon = (status: string) => {
 
 export default function TrackingTimeline({ history }: Props) {
   return (
-    <div className="space-y-12 relative before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-[1px] before:bg-accent/30 before:border-l before:border-dashed before:border-accent/50">
+    <div className="space-y-8 relative before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-[1px] before:bg-[#FFBE00]/20 before:border-l before:border-dashed before:border-[#FFBE00]/30">
       {history.map((item, index) => (
         <motion.div 
           key={index}
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.15, duration: 0.6 }}
-          className="flex gap-8 relative"
+          transition={{ delay: index * 0.1, duration: 0.4 }}
+          className="flex gap-6 relative"
         >
-          <div className="z-10 bg-background pt-1">
+          <div className="z-10 bg-[#050505] pt-1">
             <motion.div 
-              whileHover={{ scale: 1.2 }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
+              whileHover={{ scale: 1.1 }}
+              className={`w-8 h-8 rounded-none flex items-center justify-center border ${
                 index === 0 
-                ? "bg-accent border-accent text-white shadow-[0_0_15px_rgba(197,160,89,0.5)]" 
-                : "bg-white border-glass-border text-gray-400"
+                ? "bg-[#FFBE00] border-[#FFBE00] text-black shadow-[0_0_15px_rgba(255,190,0,0.3)]" 
+                : "bg-black border-[#FFBE00]/20 text-[#FFBE00]/40"
               }`}
             >
-              {index === 0 ? <CheckCircle2 size={16} /> : getIcon(item.status)}
+              {index === 0 ? <CheckCircle2 size={16} strokeWidth={3} /> : getIcon(item.status)}
             </motion.div>
           </div>
           
-          <div className={`glass-card flex-1 p-6 relative group ${
-            index === 0 ? "border-accent/40 bg-white/60" : "bg-white/30"
+          <div className={`border rounded-none flex-1 p-5 relative group transition-all duration-300 ${
+            index === 0 
+            ? "border-[#FFBE00]/40 bg-[#FFBE00]/5" 
+            : "border-[#FFBE00]/10 bg-black/40 hover:border-[#FFBE00]/30"
           }`}>
             {index === 0 && (
-              <div className="absolute -top-3 left-6 px-3 py-0.5 bg-accent text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-full">
-                Latest Update
+              <div className="absolute -top-3 left-4 px-2 py-0.5 bg-[#FFBE00] text-black text-[9px] font-black uppercase tracking-[0.2em]">
+                LIVE UPDATE
               </div>
             )}
             
-            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 mb-4">
+            {/* Corner accents for the latest update */}
+            {index === 0 && (
+              <>
+                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-[#FFBE00]" />
+                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-[#FFBE00]" />
+              </>
+            )}
+            
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 mb-3">
               <div>
-                <h4 className="font-serif text-2xl font-bold tracking-tight group-hover:text-accent transition-colors">
+                <h4 className="font-mono text-lg font-bold tracking-tight text-[#FFBE00] uppercase">
                   {item.status}
                 </h4>
-                <div className="flex items-center gap-1.5 text-sm font-bold text-accent uppercase tracking-widest mt-1">
-                  <MapPin size={14} /> {item.location}
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FFBE00]/60 uppercase tracking-[0.15em] mt-1">
+                  <MapPin size={12} className="text-[#FFBE00]" /> {item.location}
                 </div>
               </div>
-              <span className="text-sm font-medium text-gray-400 flex items-center gap-2 bg-black/5 px-3 py-1 rounded-full w-fit">
-                <Clock size={14} /> {item.timestamp}
+              <span className="text-[10px] font-mono text-[#FFBE00]/40 flex items-center gap-2 bg-[#FFBE00]/5 px-2 py-1 border border-[#FFBE00]/10">
+                <Clock size={12} /> {item.timestamp}
               </span>
             </div>
             
-            <p className="text-gray-600 text-lg font-serif italic leading-relaxed">
+            <p className="text-[#FFBE00]/80 text-sm font-medium leading-relaxed font-mono">
               {item.description}
             </p>
             
-            {/* Subtle decorative accent */}
-            <div className="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            {/* Tactical background indicator */}
+            <div className="absolute bottom-3 right-3 opacity-5 group-hover:opacity-10 transition-opacity text-[#FFBE00]">
               {getIcon(item.status)}
             </div>
           </div>

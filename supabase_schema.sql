@@ -39,6 +39,9 @@ CREATE TABLE shipments (
   volume NUMERIC,
   estimated_delivery TIMESTAMP WITH TIME ZONE,
   transport_type TEXT DEFAULT 'land',
+  stops JSONB DEFAULT '[]'::jsonb,
+  current_stop_index INTEGER DEFAULT -1,
+  last_status_update TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   image_url TEXT,
   internal_notes TEXT,
   
@@ -87,3 +90,22 @@ $$ language 'plpgsql';
 CREATE TRIGGER update_shipments_updated_at
 BEFORE UPDATE ON shipments
 FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+
+-- 6. Create Shipment Updates Table (for history/logs)
+CREATE TABLE IF NOT EXISTS shipment_updates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  shipment_id UUID REFERENCES shipments(id) ON DELETE CASCADE,
+  status INTEGER NOT NULL,
+  location TEXT,
+  message TEXT,
+  email_sent BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE shipment_updates ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins have full access to shipment_updates" ON shipment_updates
+  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+CREATE POLICY "Public can view shipment_updates" ON shipment_updates
+  FOR SELECT USING (true);

@@ -3,229 +3,213 @@
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Badge } from "@/components/ui/badge";
-import { Ship, Plane, Truck, Building2, FileCheck, ArrowRight, Anchor, Globe, ShieldCheck } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Ship, Plane, Truck, Building2, FileCheck, Anchor, Zap, ShieldCheck, Globe, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const services = [
   {
     title: "Ocean Freight",
-    icon: <Ship size={28} />,
+    icon: <Ship size={32} />,
     image: "/transport-sea.jpg",
-    desc: "Our ocean freight solutions offer the most cost-effective method for moving large volumes of cargo globally. We partner with top-tier shipping lines to guarantee space, reliable transit times, and careful handling of your containers from port to port.",
-    features: ["FCL & LCL Services", "Port-to-Port Tracking", "Hazardous Material Handling"]
+    desc: "Comprehensive deep-sea logistics solutions. We coordinate high-capacity shipments across primary global trade routes with precision tracking.",
+    features: ["FCL & LCL Services", "Port-to-Port Tracking", "Hazardous Cargo Handling"]
   },
   {
     title: "Air Freight",
-    icon: <Plane size={28} />,
+    icon: <Plane size={32} />,
     image: "/transport-air.jpg",
-    desc: "When time is of the essence, our air freight services ensure your goods reach their destination rapidly. Ideal for high-value or time-sensitive shipments, we provide priority boarding and expedited handling across international borders.",
-    features: ["Express Door-to-Door", "Charter Services", "Global Network Reach"]
+    desc: "Rapid transport solutions for time-critical cargo. Priority handling for expedited transit across all international regulatory perimeters.",
+    features: ["Express Global Routing", "Charter Operations", "Real-time Tracking"]
   },
   {
     title: "Road Transport",
-    icon: <Truck size={28} />,
+    icon: <Truck size={32} />,
     image: "/transport-land.jpeg",
-    desc: "Our robust road transport network provides seamless door-to-door delivery. Whether it's full truckload (FTL) or less than truckload (LTL), our modern fleet ensures your goods are transported safely and efficiently across domestic and regional routes.",
-    features: ["FTL & LTL Solutions", "Last-Mile Delivery", "Real-Time GPS Tracking"]
+    desc: "Versatile ground transport network. Real-time GPS tracking and efficient last-mile delivery for regional distribution.",
+    features: ["Heavy Load Solutions", "Door-to-Door Delivery", "Secure Transit Documentation"]
   },
   {
     title: "Warehousing",
-    icon: <Building2 size={28} />,
+    icon: <Building2 size={32} />,
     image: "/hero-bg.png",
-    desc: "Store your inventory securely in our modern facilities. We offer scalable warehousing solutions, inventory management, and order fulfillment services to help streamline your supply chain and reduce overhead costs.",
-    features: ["Climate Controlled Storage", "Inventory Management", "Distribution Hubs"]
+    desc: "Secure cargo storage within modern facilities. Climate-controlled storage with real-time inventory management and fulfillment services.",
+    features: ["Modern Storage Facilities", "Inventory Management", "Automated Loading"]
   },
   {
-    title: "Customs Clearance",
-    icon: <FileCheck size={28} />,
+    title: "Customs Clearing",
+    icon: <FileCheck size={32} />,
     image: "/hero-bg.png",
-    desc: "Navigate complex international trade regulations with ease. Our dedicated customs brokers handle all necessary documentation, duties, and compliance checks to ensure your shipments clear borders smoothly without costly delays.",
-    features: ["Duty & Tax Consultation", "Compliance Auditing", "Digital Documentation"]
+    desc: "Efficient regulatory compliance. Our experienced brokers manage manifest clearing to ensure seamless border transitions for your cargo.",
+    features: ["Compliance Auditing", "Digital Documentation", "Seamless Clearing"]
   },
   {
     title: "Project Logistics",
-    icon: <Anchor size={28} />,
+    icon: <Anchor size={32} />,
     image: "/hero-bg.png",
-    desc: "Handling oversized, heavy, or complex shipments requires specialized expertise. Our project logistics team manages everything from heavy lift transportation to complex multi-modal movements for industrial projects.",
-    features: ["Heavy Lift Operations", "Site Surveys", "Route Optimization"]
+    desc: "Specialized handling of oversized and heavy cargo. Complex multi-modal coordination for large-scale industrial projects.",
+    features: ["Heavy Lift Solutions", "Route Optimization", "Project Management"]
   }
 ];
 
 export default function ServicesPage() {
   return (
-    <div className="bg-white min-h-screen text-navy font-sans selection:bg-accent selection:text-white overflow-x-hidden">
+    <div className="bg-white min-h-screen text-slate-900 font-sans selection:bg-[#00458B] selection:text-white overflow-x-hidden">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative h-[60vh] min-h-[500px] flex items-center bg-navy overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/hero-bg.png"
-            alt="Global Logistics Services"
-            fill
-            priority
-            className="object-cover object-center opacity-30 grayscale brightness-50"
-          />
-          <div className="absolute inset-0 bg-navy/60" />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl"
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="h-[2px] w-12 bg-accent" />
-              <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs">Our Expertise</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 leading-[1.1]">
-              Logistics Solutions for a <span className="text-white/80">Global Marketplace.</span>
-            </h1>
-            <p className="text-xl text-white/70 max-w-2xl leading-relaxed font-light mb-10">
-              From deep-sea shipping to expedited air freight, Alexandria provides the infrastructure and expertise to move your business forward.
-            </p>
-            <div className="flex flex-wrap gap-4">
-               <button className="bg-accent hover:bg-accent/90 text-white px-10 py-5 font-bold uppercase tracking-widest text-[10px] shadow-2xl transition-all">
-                 Request a Quote
-               </button>
-               <button className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-10 py-5 font-bold uppercase tracking-widest text-[10px] border border-white/20 transition-all">
-                 View Network
-               </button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Services Grid */}
-      <section className="py-32 bg-slate-50 relative">
-        <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-            <div className="max-w-2xl">
-              <h2 className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4">Core Capabilities</h2>
-              <h3 className="text-4xl md:text-5xl font-bold text-navy leading-tight">Comprehensive solutions for every shipment.</h3>
-            </div>
-            <p className="text-slate-500 max-w-sm text-sm leading-relaxed">
-              We leverage a world-class network of partners and proprietary technology to ensure your cargo moves seamlessly across borders.
-            </p>
+      <main>
+        {/* Hero Section */}
+        <section className="relative pt-32 pb-20 bg-slate-50 border-b border-slate-200 overflow-hidden">
+          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
+            <div className="absolute inset-0 bg-[#00458B] transform skew-x-12 translate-x-20" />
           </div>
+          
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="max-w-3xl"
+            >
+              <span className="inline-block py-1 px-3 rounded-full bg-[#00458B]/10 text-[#00458B] text-xs font-bold uppercase tracking-wider mb-6">
+                Our Capabilities
+              </span>
+              <h1 className="text-5xl md:text-7xl font-extrabold text-[#00458B] mb-8 leading-tight tracking-tight">
+                Global Logistics <br />
+                <span className="text-slate-400">Excellence.</span>
+              </h1>
+              <p className="text-xl text-slate-600 mb-10 leading-relaxed max-w-2xl">
+                From ocean routing to expedited air transport, Alexandria provides the infrastructure for a seamless global supply chain.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                 <button className="bg-[#00458B] hover:bg-[#003366] text-white px-8 py-4 rounded-lg font-bold transition-all flex items-center gap-2">
+                   Request a Quote <ArrowRight size={18} />
+                 </button>
+                 <button className="bg-white hover:bg-slate-50 text-[#00458B] border border-slate-200 px-8 py-4 rounded-lg font-bold transition-all">
+                   Contact Sales
+                 </button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {services.map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="h-full overflow-hidden border-0 shadow-2xl hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] transition-all duration-700 group bg-white">
-                  <div className="relative h-64 overflow-hidden">
-                    <Image 
-                      src={service.image} 
-                      alt={service.title} 
-                      fill 
-                      className="object-cover transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" 
-                    />
-                    <div className="absolute inset-0 bg-navy/40 group-hover:bg-navy/0 transition-colors duration-500" />
-                    <div className="absolute bottom-6 left-6 z-10">
-                       <div className="w-16 h-16 bg-white text-navy flex items-center justify-center shadow-xl group-hover:bg-accent group-hover:text-white transition-all duration-500">
-                         {service.icon}
-                       </div>
-                    </div>
+        {/* Services Grid */}
+        <section className="py-24 px-6 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((svc, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="group bg-white border border-slate-200 rounded-2xl p-8 hover:shadow-xl hover:shadow-[#00458B]/5 hover:border-[#00458B]/20 transition-all duration-300"
+                >
+                  <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center text-[#00458B] mb-8 group-hover:bg-[#00458B] group-hover:text-white transition-all duration-300">
+                    {svc.icon}
                   </div>
-                  <CardContent className="p-10">
-                    <h3 className="text-2xl font-bold text-navy mb-4">{service.title}</h3>
-                    <p className="text-slate-600 text-sm leading-relaxed mb-8 h-20 overflow-hidden">
-                      {service.desc}
-                    </p>
-                    <ul className="space-y-3 mb-10">
-                      {service.features.map((feature, fIndex) => (
-                        <li key={fIndex} className="flex items-center gap-3 text-xs font-bold text-navy/70 uppercase tracking-wider">
-                          <ShieldCheck size={14} className="text-accent" />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    <button className="text-accent font-bold text-xs uppercase tracking-widest flex items-center gap-2 group/btn">
-                      Explore Service <ArrowRight size={14} className="group-hover/btn:translate-x-2 transition-transform" />
+                  <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-[#00458B] transition-colors">{svc.title}</h3>
+                  <p className="text-slate-500 leading-relaxed mb-8 min-h-[80px]">
+                    {svc.desc}
+                  </p>
+                  
+                  <div className="space-y-3">
+                    {svc.features.map((f, j) => (
+                      <div key={j} className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#00458B]/40" />
+                        <span className="text-sm font-medium text-slate-600">{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-10 pt-6 border-t border-slate-100 group-hover:border-[#00458B]/10 transition-colors">
+                    <button className="text-sm font-bold text-[#00458B] flex items-center gap-2 group/btn">
+                      Learn More <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                     </button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Specialized Solutions - Dark Section */}
-      <section className="py-32 bg-navy relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-accent/5 skew-x-12 translate-x-1/2 pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-20">
-            <div className="lg:w-1/2">
-               <h2 className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4">Strategic Partnership</h2>
-               <h3 className="text-4xl md:text-6xl font-bold text-white mb-8 leading-tight">Beyond Transportation: <br /><span className="text-white/60 text-3xl md:text-5xl italic">A Partner in Growth.</span></h3>
-               <p className="text-white/70 text-lg leading-relaxed mb-10 max-w-xl">
-                 We don't just move boxes. We design supply chain strategies that reduce costs, improve speed to market, and provide the visibility you need to make critical business decisions.
-               </p>
-               <div className="grid grid-cols-2 gap-8 mb-12">
-                  <div className="space-y-2">
-                     <div className="text-3xl font-bold text-accent">99.8%</div>
-                     <p className="text-xs text-white/50 uppercase tracking-widest font-bold">On-Time Reliability</p>
                   </div>
-                  <div className="space-y-2">
-                     <div className="text-3xl font-bold text-accent">24/7</div>
-                     <p className="text-xs text-white/50 uppercase tracking-widest font-bold">Global Support</p>
-                  </div>
-               </div>
-               <button className="bg-white text-navy px-12 py-5 font-black uppercase tracking-widest text-[10px] hover:bg-accent hover:text-white transition-all shadow-2xl">
-                 Contact Our Strategists
-               </button>
-            </div>
-            <div className="lg:w-1/2 relative">
-               <div className="relative z-10 aspect-video overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.5)]">
-                 <Image 
-                   src="/hero-bg.png" 
-                   alt="Logistics Technology" 
-                   fill 
-                   className="object-cover grayscale" 
-                 />
-                 <div className="absolute inset-0 bg-navy/40 mix-blend-multiply" />
-               </div>
-               <div className="absolute -top-10 -left-10 w-40 h-40 border-8 border-accent/20 -z-10" />
-               <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-accent/10 rounded-full blur-[80px] -z-10" />
+                </motion.div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Global Network Section */}
-      <section className="py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 text-center">
-          <div className="max-w-3xl mx-auto mb-20">
-            <h2 className="text-accent font-bold uppercase tracking-[0.3em] text-xs mb-4">Our Network</h2>
-            <h3 className="text-4xl md:text-5xl font-bold text-navy mb-6">Connecting every major trade lane.</h3>
-            <p className="text-slate-500 leading-relaxed">
-              With strategically located hubs in Rotterdam, Singapore, and Houston, we provide a truly global reach for your cargo.
+        {/* Support Section */}
+        <section className="py-32 bg-[#00458B] text-white overflow-hidden relative">
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute top-0 left-0 w-full h-full border-[40px] border-white/10 rounded-full -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          
+          <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <Zap className="text-white/40 mx-auto mb-8" size={48} />
+            <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
+              Professional Logistics <br />
+              <span className="text-white/60">Support Center.</span>
+            </h2>
+            <p className="text-xl text-white/70 mb-16 max-w-2xl mx-auto leading-relaxed">
+              Our global team is available 24/7 to provide expert assistance for your shipping and logistics requirements.
             </p>
+            <div className="grid sm:grid-cols-2 gap-6">
+               <div className="p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-left">
+                  <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Email Inquiries</p>
+                  <p className="text-2xl font-bold tracking-tight">info@alexandria-shipping.com</p>
+               </div>
+               <div className="p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-left">
+                  <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-2">Phone Support</p>
+                  <p className="text-2xl font-bold tracking-tight">+1 (800) 555-0123</p>
+               </div>
+            </div>
           </div>
-          <div className="relative aspect-[21/9] w-full max-w-5xl mx-auto grayscale opacity-40 hover:opacity-100 hover:grayscale-0 transition-all duration-1000 cursor-crosshair">
-             <Image 
-               src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?q=80&w=1974&auto=format&fit=crop" 
-               alt="Global Map" 
-               fill 
-               className="object-contain" 
-             />
+        </section>
+
+        {/* Global Network Section */}
+        <section className="py-24 bg-white px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center gap-20">
+              <div className="flex-1">
+                <span className="inline-block py-1 px-3 rounded-full bg-[#00458B]/10 text-[#00458B] text-xs font-bold uppercase tracking-wider mb-6">
+                  Global Reach
+                </span>
+                <h2 className="text-4xl font-bold text-[#00458B] mb-8 leading-tight">
+                  Connecting the World's Primary Shipping Hubs.
+                </h2>
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center text-[#00458B]">
+                      <Globe size={24} />
+                    </div>
+                    <h4 className="font-bold text-slate-900">Global Network</h4>
+                    <p className="text-sm text-slate-500 leading-relaxed">Over 150 port terminals integrated within our global logistics network.</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center text-[#00458B]">
+                      <ShieldCheck size={24} />
+                    </div>
+                    <h4 className="font-bold text-slate-900">Verified Carriers</h4>
+                    <p className="text-sm text-slate-500 leading-relaxed">Rigorous vetting process for all transport partners to ensure cargo safety.</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 relative">
+                <div className="aspect-video bg-slate-100 rounded-3xl overflow-hidden relative">
+                  <Image 
+                    src="/transport-sea.jpg" 
+                    alt="Network" 
+                    fill 
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-[#00458B]/20" />
+                </div>
+                <div className="absolute -bottom-8 -left-8 bg-white p-8 rounded-2xl shadow-xl shadow-slate-200 border border-slate-100 max-w-[240px]">
+                  <p className="text-3xl font-black text-[#00458B] mb-1 tracking-tight">99.8%</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Reliability Rate</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       <Footer />
     </div>
   );
 }
-

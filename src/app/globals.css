@@ -1,372 +1,108 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ============================================
-   ALEXANDRIA DESIGN TOKENS — BLUE PALETTE
-   ============================================ */
 :root {
-  /* Brand - Cyber Noir */
-  --navy: #0A111A;
-  --navy-light: #0B1421;
-  --navy-deep: #050B14;
-  --accent: #FFBE00;
-  --accent-glow: rgba(255, 190, 0, 0.4);
-
-  /* Neutrals */
-  --white: #ffffff;
-  --slate-50: #F8FAFC;
-  --slate-100: #F1F5F9;
-  --slate-200: #E2E8F0;
-  --slate-300: #CBD5E1;
-  --slate-400: #94A3B8;
-  --slate-500: #64748B;
-  --slate-600: #475569;
-  --slate-700: #334155;
-  --slate-800: #1E293B;
-  --slate-900: #0F172A;
+  --background: #FFFFFF;
+  --foreground: #020617;
+  
+  --card: #ffffff;
+  --card-foreground: #020617;
+  
+  --popover: #ffffff;
+  --popover-foreground: #020617;
+  
+  --primary: #00458B;
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  
+  --accent: #e2e8f0;
+  --accent-foreground: #0f172a;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #00458B;
+  
+  --radius: 0.5rem;
 }
 
-/* ── Global Resets ── */
-html { height: 100%; scroll-behavior: smooth; }
-body {
-  min-height: 100%;
-  font-family: 'Inter', -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
-  overflow-x: hidden;
-  background-color: var(--white);
-  color: var(--slate-900);
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --border: #1e293b;
+  --input: #1e293b;
 }
-a { color: inherit; text-decoration: none; }
-img { display: block; max-width: 100%; }
+
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
 
 /* ── Typography ── */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  @apply font-bold;
 }
 
 /* ============================================
-   LEAFLET MAP OVERRIDES
+   MARITIME UTILITIES
    ============================================ */
-.leaflet-map-container {
-  width: 100%;
-  height: 420px;
-}
-@media (min-width: 768px) {
-  .leaflet-map-container { height: 480px; }
-}
-
-.map-pin {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.map-pin--gold {
-  background: var(--blue);
-  color: var(--white);
-  box-shadow: 0 4px 12px rgba(43,127,255,0.4);
-}
-.map-pin--active {
-  background: var(--navy);
-  color: var(--blue);
-  box-shadow: 0 0 0 4px rgba(43,127,255,0.25), 0 4px 16px rgba(10,47,110,0.3);
-  animation: pulse-pin 2s ease-in-out infinite;
-}
-@keyframes pulse-pin {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(43,127,255,0.25), 0 4px 16px rgba(10,47,110,0.3); }
-  50% { box-shadow: 0 0 0 10px rgba(43,127,255,0.08), 0 4px 16px rgba(10,47,110,0.3); }
+.maritime-grid {
+  background-image: 
+    linear-gradient(rgba(0, 69, 139, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 69, 139, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
 
-.leaflet-gold-pin,
-.leaflet-active-pin {
-  background: none !important;
-  border: none !important;
+.maritime-panel {
+  @apply bg-white border border-slate-200 shadow-xl;
 }
 
-.leaflet-popup-content-wrapper {
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-md) !important;
-  font-family: 'Inter', sans-serif !important;
-  font-size: 0.85rem !important;
-  padding: 4px 8px !important;
+.maritime-gradient {
+  background: linear-gradient(135deg, #00458B 0%, #002D5B 100%);
 }
-.leaflet-popup-tip {
-  box-shadow: none !important;
+
+.glass-panel {
+  @apply bg-white/80 backdrop-blur-md border border-white/20;
+}
+
+.glow-blue {
+  box-shadow: 0 0 20px rgba(0, 69, 139, 0.15);
 }
 
 /* ============================================
-   ANIMATIONS
-   ============================================ */
-@keyframes spin-slow {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.4); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-/* ============================================
-   CYBER-NOIR EFFECTS
-   ============================================ */
-.cyber-glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.cyber-scanlines {
-  position: relative;
-  overflow: hidden;
-}
-
-.cyber-scanlines::after {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 2;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-  opacity: 0.1;
-}
-
-.glow-text {
-  text-shadow: 0 0 10px var(--accent-glow);
-}
-
-.glow-border {
-  box-shadow: 0 0 15px var(--accent-glow);
-}
-
-@keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-.scanline-move::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--accent);
-  opacity: 0.1;
-  animation: scanline 4s linear infinite;
-  pointer-events: none;
-}
-
-/* ============================================
-   SCROLLBAR
+   CUSTOM SCROLLBAR
    ============================================ */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--gray-50); }
-::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { 
+  background: #E2E8F0; 
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
 
-/* ============================================
-   UPDATE THREAD (TIMELINE) — used by tracking
-   ============================================ */
-.update-thread {
-  margin-top: 2rem;
-  background: var(--white);
-  border-radius: var(--radius-md);
-  padding: 24px;
-  border: 1px solid var(--gray-200);
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-.update-thread-title {
-  font-size: 1.1rem;
-  color: var(--navy);
-  margin-bottom: 20px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.update-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: relative;
-}
-.update-timeline::before {
-  content: '';
-  position: absolute;
-  left: 15px;
-  top: 10px;
-  bottom: 20px;
-  width: 2px;
-  background: var(--gray-200);
-}
-.update-item {
-  display: flex;
-  gap: 16px;
-  position: relative;
-  z-index: 1;
-}
-.update-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--white);
-  border: 2px solid var(--blue);
-  color: var(--blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 0 0 4px var(--white);
-}
-.update-content {
-  flex: 1;
-  background: var(--gray-50);
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--gray-100);
-}
-.update-content-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 4px;
-}
-.update-status-label {
-  font-weight: 600;
-  color: var(--navy);
-}
-.update-time {
-  font-size: 0.8rem;
-  color: var(--gray-500);
-  white-space: nowrap;
-}
-.update-location {
-  font-size: 0.85rem;
-  color: var(--gray-500);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 4px;
-}
-.update-message {
-  font-size: 0.85rem;
-  color: var(--gray-500);
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px dashed var(--gray-200);
-}
-@media (max-width: 600px) {
-  .update-thread { padding: 16px; }
-}
-
-/* ============================================
-   SHADCN DESIGN TOKENS — BLUE THEME
-   ============================================ */
-@layer base {
-  :root {
-    --background: oklch(0.985 0.002 240);
-    --foreground: oklch(0.145 0.02 250);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0.02 250);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0.02 250);
-    --primary: oklch(0.45 0.18 260);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.96 0.01 240);
-    --secondary-foreground: oklch(0.25 0.03 250);
-    --muted: oklch(0.96 0.01 240);
-    --muted-foreground: oklch(0.50 0.02 250);
-    --accent: oklch(0.96 0.01 240);
-    --accent-foreground: oklch(0.25 0.03 250);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.90 0.01 240);
-    --input: oklch(0.90 0.01 240);
-    --ring: oklch(0.55 0.15 260);
-    --chart-1: oklch(0.55 0.18 260);
-    --chart-2: oklch(0.65 0.15 220);
-    --chart-3: oklch(0.45 0.12 280);
-    --chart-4: oklch(0.70 0.10 200);
-    --chart-5: oklch(0.35 0.20 260);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0.002 240);
-    --sidebar-foreground: oklch(0.145 0.02 250);
-    --sidebar-primary: oklch(0.45 0.18 260);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.96 0.01 240);
-    --sidebar-accent-foreground: oklch(0.25 0.03 250);
-    --sidebar-border: oklch(0.90 0.01 240);
-    --sidebar-ring: oklch(0.55 0.15 260);
-  }
-  .dark {
-    --background: oklch(0.145 0.02 250);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.20 0.02 250);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.20 0.02 250);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.65 0.18 260);
-    --primary-foreground: oklch(0.15 0.02 250);
-    --secondary: oklch(0.25 0.02 250);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.25 0.02 250);
-    --muted-foreground: oklch(0.65 0.02 250);
-    --accent: oklch(0.25 0.02 250);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.55 0.15 260);
-    --chart-1: oklch(0.55 0.18 260);
-    --chart-2: oklch(0.65 0.15 220);
-    --chart-3: oklch(0.45 0.12 280);
-    --chart-4: oklch(0.70 0.10 200);
-    --chart-5: oklch(0.35 0.20 260);
-    --sidebar: oklch(0.20 0.02 250);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.65 0.18 260);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.25 0.02 250);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.55 0.15 260);
-  }
-  * {
-    border-color: var(--border);
-    outline-color: var(--ring);
-  }
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
