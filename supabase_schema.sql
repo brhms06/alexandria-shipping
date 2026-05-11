@@ -31,6 +31,19 @@ CREATE TABLE shipments (
   customer_email TEXT,
   customer_phone TEXT,
 
+  -- Extended Contact Details
+  sender_phone TEXT,
+  sender_country TEXT,
+  sender_email TEXT,
+  receiver_phone TEXT,
+  receiver_country TEXT,
+  receiver_email TEXT,
+
+  -- Reference & Financial
+  po_number TEXT,
+  pending_fees NUMERIC(12,2) DEFAULT 0,
+  dispatch_date TIMESTAMP WITH TIME ZONE,
+
   -- Additional Logistics Data
   service_level TEXT DEFAULT 'Standard',
   payment_status TEXT DEFAULT 'Pending',

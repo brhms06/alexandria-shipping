@@ -33,19 +33,23 @@ export async function proxy(request: NextRequest) {
     }
   );
 
+  // This will refresh the session if it's expired
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If user is not signed in and trying to access dashboard, redirect to login
-  if (!user && request.nextUrl.pathname.startsWith('/admin/dashboard')) {
+  const isDashboardRoute = request.nextUrl.pathname.startsWith('/admin/dashboard');
+  const isLoginRoute = request.nextUrl.pathname === '/admin';
+
+  // Auth Guard for Admin Dashboard
+  if (!user && isDashboardRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/admin';
     return NextResponse.redirect(url);
   }
 
-  // If user is signed in and trying to access login, redirect to dashboard
-  if (user && request.nextUrl.pathname === '/admin') {
+  // Prevent logged-in users from hitting login page
+  if (user && isLoginRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/admin/dashboard';
     return NextResponse.redirect(url);
@@ -55,5 +59,13 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };

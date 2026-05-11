@@ -1,6 +1,6 @@
 "use client";
 
-import { Ship, Phone, Mail, Search, Menu, X, Globe, User, Shield, Anchor } from "lucide-react";
+import { Ship, Search, Menu, X, Globe, User, Shield, Anchor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
@@ -26,12 +26,7 @@ export default function Navbar() {
       <div className={`bg-[#002D5B] text-white py-2 px-4 sm:px-10 text-[11px] font-medium transition-all duration-300 ${scrolled ? 'h-0 py-0 overflow-hidden opacity-0' : 'h-auto opacity-100'}`}>
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 hover:text-blue-200 transition-colors cursor-pointer">
-              <Phone size={12} className="text-blue-300" /> +0800 123 456
-            </div>
-            <div className="hidden sm:flex items-center gap-2 hover:text-blue-200 transition-colors cursor-pointer">
-              <Mail size={12} className="text-blue-300" /> office@alexandria-shipping.com
-            </div>
+            {/* Contact info removed */}
           </div>
           <div className="flex items-center gap-6">
              <div className="flex items-center gap-2">

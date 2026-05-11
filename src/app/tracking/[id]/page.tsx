@@ -7,7 +7,7 @@ import {
   CheckCircle, ArrowRight, Navigation, Phone, Mail, FileText, 
   Truck, Plane, Anchor, Info, AlertCircle, ChevronLeft, User, 
   Printer, Share2, Download, ExternalLink, Map as MapIcon, 
-  ChevronDown, ArrowLeft, Building2, Calendar
+  ChevronDown, ArrowLeft, Building2, Calendar, DollarSign, Hash, Flag
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,11 +23,12 @@ import Footer from "@/components/Footer";
 
 const STATUS_MAP: Record<number, { label: string; color: string; bgColor: string }> = {
   1: { label: "Order Received", color: "#00458B", bgColor: "#E0EEFF" },
-  2: { label: "In Preparation", color: "#00458B", bgColor: "#E0EEFF" },
+  2: { label: "Processing", color: "#00458B", bgColor: "#E0EEFF" },
   3: { label: "In Transit", color: "#00458B", bgColor: "#E0EEFF" },
-  4: { label: "Out for Delivery", color: "#00458B", bgColor: "#E0EEFF" },
-  5: { label: "Delivered", color: "#10B981", bgColor: "#D1FAE5" },
-  6: { label: "Held at Port", color: "#EF4444", bgColor: "#FEE2E2" },
+  4: { label: "Arrived at Stop", color: "#00458B", bgColor: "#E0EEFF" },
+  5: { label: "Out for Delivery", color: "#00458B", bgColor: "#E0EEFF" },
+  6: { label: "Delivered", color: "#10B981", bgColor: "#D1FAE5" },
+  7: { label: "On Hold", color: "#EF4444", bgColor: "#FEE2E2" },
 };
 
 export default function TrackingPage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
@@ -97,12 +98,12 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
       startY: 75,
       head: [['SENDER INFORMATION', 'RECEIVER INFORMATION']],
       body: [[
-        `${shipment.sender_name}\n${shipment.sender_address}\n${shipment.customer_phone || ""}`,
-        `${shipment.receiver_name}\n${shipment.receiver_address}`
+        `${shipment.sender_name}\n${shipment.sender_address}\n${shipment.sender_country || ""}\nPhone: ${shipment.sender_phone || "N/A"}\nEmail: ${shipment.sender_email || "N/A"}`,
+        `${shipment.receiver_name}\n${shipment.receiver_address}\n${shipment.receiver_country || ""}\nPhone: ${shipment.receiver_phone || "N/A"}\nEmail: ${shipment.receiver_email || "N/A"}`
       ]],
       theme: 'grid',
       headStyles: { fillColor: [0, 69, 139], textColor: [255, 255, 255] },
-      styles: { fontSize: 10, cellPadding: 8 }
+      styles: { fontSize: 9, cellPadding: 8 }
     });
     
     // Package Details
@@ -114,7 +115,11 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
         ['Transport Mode', shipment.transport_type?.toUpperCase() || 'SEA'],
         ['Gross Weight', `${shipment.weight} KG`],
         ['Volume', `${shipment.volume} M3`],
-        ['Est. Delivery', shipment.estimated_delivery || 'Pending Update']
+        ['PO / Invoice #', shipment.po_number || 'N/A'],
+        ['Dispatch Date', shipment.dispatch_date ? new Date(shipment.dispatch_date).toLocaleDateString() : 'N/A'],
+        ['Est. Delivery', shipment.estimated_delivery ? new Date(shipment.estimated_delivery).toLocaleDateString() : 'Pending Update'],
+        ['Payment Status', shipment.payment_status || 'Pending'],
+        ['Pending Fees', shipment.pending_fees > 0 ? `$${Number(shipment.pending_fees).toFixed(2)}` : 'None']
       ],
       theme: 'striped',
       headStyles: { fillColor: [0, 69, 139], textColor: [255, 255, 255] }
@@ -219,7 +224,7 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estimated Delivery</p>
                  <div className="flex items-center gap-2">
                     <Calendar size={16} className="text-blue-600" />
-                    <p className="text-xl font-bold text-slate-900">{shipment.estimated_delivery || "Updating..."}</p>
+                    <p className="text-xl font-bold text-slate-900">{shipment.estimated_delivery ? new Date(shipment.estimated_delivery).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Updating..."}</p>
                  </div>
               </div>
               <div className="space-y-1">
@@ -237,10 +242,10 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
                  </div>
               </div>
               <div className="space-y-1">
-                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Last Update</p>
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{shipment.po_number ? 'PO / Reference' : 'Last Update'}</p>
                  <div className="flex items-center gap-2">
-                    <Clock size={16} className="text-blue-600" />
-                    <p className="text-xl font-bold text-slate-900">{new Date(shipment.updated_at).toLocaleDateString()}</p>
+                    {shipment.po_number ? <Hash size={16} className="text-blue-600" /> : <Clock size={16} className="text-blue-600" />}
+                    <p className="text-xl font-bold text-slate-900">{shipment.po_number || new Date(shipment.updated_at).toLocaleDateString()}</p>
                  </div>
               </div>
            </div>
@@ -267,48 +272,62 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
                              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live Synchronization</span>
                           </div>
                           <div className="p-10 md:p-16">
-                             <div className="flex flex-col md:flex-row items-center justify-between gap-12 relative">
-                                <div className="hidden md:block absolute top-10 left-10 right-10 h-1 bg-slate-100 -z-10" />
+                             <div className="flex flex-row items-start justify-between gap-6 relative overflow-x-auto pb-6 pt-4 custom-scrollbar">
+                                <div className="absolute top-12 md:top-14 left-10 right-10 h-1 bg-slate-100 z-0 min-w-[max-content]" style={{ width: 'calc(100% - 80px)' }} />
 
-                                {[
-                                  { 
-                                    label: "Origin", 
-                                    location: shipment.sender_address?.split(',')[0] || "Origin", 
-                                    icon: Building2, 
-                                    active: true,
-                                    completed: shipment.current_stop_index >= 0 || shipment.status >= 3
-                                  },
-                                  { 
-                                    label: "In Transit", 
-                                    location: shipment.current_stop_index === -1 
-                                      ? "Departed" 
-                                      : shipment.current_stop_index >= (shipment.stops?.length || 0)
-                                        ? "At Hub"
-                                        : shipment.stops?.[shipment.current_stop_index]?.name || "In Transit", 
-                                    icon: MapPin, 
-                                    active: shipment.status >= 3, 
-                                    completed: shipment.status >= 5
-                                  },
-                                  { 
+                                {(() => {
+                                  const points = [
+                                    { 
+                                      label: "Origin", 
+                                      location: shipment.sender_address?.split(',')[0] || "Origin", 
+                                      icon: Building2, 
+                                      active: true,
+                                      completed: shipment.current_stop_index >= 0 || shipment.status >= 3
+                                    }
+                                  ];
+                                  
+                                  if (shipment.stops && shipment.stops.length > 0) {
+                                    shipment.stops.forEach((stop: any, index: number) => {
+                                      points.push({
+                                        label: `Stop ${index + 1}`,
+                                        location: stop.name || `Waypoint ${index + 1}`,
+                                        icon: MapPin,
+                                        active: shipment.status >= 3 && (shipment.current_stop_index >= index || shipment.status >= 5),
+                                        completed: stop.status === 'completed'
+                                      });
+                                    });
+                                  } else {
+                                    points.push({
+                                      label: "In Transit", 
+                                      location: shipment.status >= 3 ? (shipment.current_location || "Departed") : "Pending", 
+                                      icon: MapPin, 
+                                      active: shipment.status >= 3, 
+                                      completed: shipment.status >= 5
+                                    });
+                                  }
+                                  
+                                  points.push({
                                     label: "Destination", 
                                     location: shipment.receiver_address?.split(',')[0] || "Destination", 
                                     icon: Anchor, 
                                     active: shipment.status >= 5,
                                     completed: shipment.status >= 5
-                                  },
-                                ].map((point, i) => (
-                                  <div key={i} className="flex flex-col items-center gap-4 text-center flex-1 w-full group">
-                                    <div className={`w-20 h-20 rounded-full flex items-center justify-center border-4 transition-all duration-500 relative ${point.active ? 'bg-blue-600 border-blue-100 text-white' : 'bg-white border-slate-100 text-slate-300'}`}>
-                                       {point.active && !point.completed && <div className="absolute inset-0 bg-blue-600 rounded-full animate-ping opacity-20" />}
-                                       <point.icon size={28} />
-                                       {point.completed && <div className="absolute -top-1 -right-1 bg-emerald-500 text-white rounded-full p-1 border-2 border-white"><CheckCircle size={12} /></div>}
+                                  });
+
+                                  return points.map((point, i) => (
+                                    <div key={i} className="flex flex-col items-center gap-4 text-center flex-1 min-w-[120px] group relative">
+                                      <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border-4 transition-all duration-500 z-10 relative ${point.active ? 'bg-blue-600 border-blue-100 text-white shadow-xl shadow-blue-600/20' : 'bg-white border-slate-100 text-slate-300'}`}>
+                                         {point.active && !point.completed && <div className="absolute inset-0 bg-blue-600 rounded-full animate-ping opacity-20" />}
+                                         <point.icon size={24} className="md:w-7 md:h-7" />
+                                         {point.completed && <div className="absolute -top-1 -right-1 bg-emerald-500 text-white rounded-full p-1 border-2 border-white"><CheckCircle size={12} /></div>}
+                                      </div>
+                                      <div className="space-y-1 mt-2">
+                                         <p className={`text-[10px] font-bold uppercase tracking-widest ${point.active ? 'text-blue-600' : 'text-slate-400'}`}>{point.label}</p>
+                                         <p className={`text-sm font-bold ${point.active ? 'text-slate-900' : 'text-slate-400'} line-clamp-2 px-2`}>{point.location}</p>
+                                      </div>
                                     </div>
-                                    <div className="space-y-1">
-                                       <p className={`text-[10px] font-bold uppercase tracking-widest ${point.active ? 'text-blue-600' : 'text-slate-400'}`}>{point.label}</p>
-                                       <p className={`text-base font-bold ${point.active ? 'text-slate-900' : 'text-slate-400'}`}>{point.location}</p>
-                                    </div>
-                                  </div>
-                                ))}
+                                  ));
+                                })()}
                              </div>
                           </div>
                        </CardContent>
@@ -352,7 +371,22 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
 
                  {/* Right Column: Info Cards */}
                  <div className="space-y-8">
-                    {/* Consignor/Consignee Info */}
+                    {/* Pending Fees Alert */}
+                    {shipment.pending_fees > 0 && (
+                       <Card className="border-2 border-amber-300 bg-amber-50 shadow-sm">
+                          <CardContent className="p-6 flex items-start gap-4">
+                             <div className="p-3 bg-amber-100 rounded-xl">
+                                <DollarSign size={24} className="text-amber-700" />
+                             </div>
+                             <div className="flex-1">
+                                <p className="font-bold text-amber-900 text-lg">Outstanding Balance</p>
+                                <p className="text-sm text-amber-700 mt-1">A fee of <span className="font-black text-amber-900">${Number(shipment.pending_fees).toFixed(2)}</span> is required before delivery can proceed. Please contact our team to settle this balance.</p>
+                             </div>
+                          </CardContent>
+                       </Card>
+                    )}
+
+                 {/* Consignor/Consignee Info */}
                     <Card className="border-none shadow-sm">
                        <CardContent className="p-8 space-y-8">
                           <div className="space-y-4">
@@ -362,7 +396,14 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
                              <div>
                                 <p className="text-xl font-bold text-slate-900">{shipment.sender_name}</p>
                                 <p className="text-sm text-slate-500 mt-1 leading-relaxed">{shipment.sender_address}</p>
+                                {shipment.sender_country && <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1"><Flag size={10} /> {shipment.sender_country}</p>}
                              </div>
+                             {(shipment.sender_phone || shipment.sender_email) && (
+                                <div className="flex flex-wrap gap-4 pt-2">
+                                   {shipment.sender_phone && <a href={`tel:${shipment.sender_phone}`} className="flex items-center gap-2 text-xs text-slate-500 hover:text-blue-600 transition-colors"><Phone size={12} /> {shipment.sender_phone}</a>}
+                                   {shipment.sender_email && <a href={`mailto:${shipment.sender_email}`} className="flex items-center gap-2 text-xs text-slate-500 hover:text-blue-600 transition-colors"><Mail size={12} /> {shipment.sender_email}</a>}
+                                </div>
+                             )}
                           </div>
                           <Separator />
                           <div className="space-y-4">
@@ -372,7 +413,14 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
                              <div>
                                 <p className="text-xl font-bold text-slate-900">{shipment.receiver_name}</p>
                                 <p className="text-sm text-slate-500 mt-1 leading-relaxed">{shipment.receiver_address}</p>
+                                {shipment.receiver_country && <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1"><Flag size={10} /> {shipment.receiver_country}</p>}
                              </div>
+                             {(shipment.receiver_phone || shipment.receiver_email) && (
+                                <div className="flex flex-wrap gap-4 pt-2">
+                                   {shipment.receiver_phone && <a href={`tel:${shipment.receiver_phone}`} className="flex items-center gap-2 text-xs text-slate-500 hover:text-blue-600 transition-colors"><Phone size={12} /> {shipment.receiver_phone}</a>}
+                                   {shipment.receiver_email && <a href={`mailto:${shipment.receiver_email}`} className="flex items-center gap-2 text-xs text-slate-500 hover:text-blue-600 transition-colors"><Mail size={12} /> {shipment.receiver_email}</a>}
+                                </div>
+                             )}
                           </div>
                        </CardContent>
                     </Card>
@@ -422,7 +470,7 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
                          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Current Position</p>
                       </div>
                       <p className="text-lg font-bold text-slate-900 leading-tight">
-                         {shipment.current_location_name || "Synchronizing GPS..."}
+                         {shipment.current_location || "Synchronizing GPS..."}
                       </p>
                    </div>
                 </div>
@@ -430,9 +478,14 @@ export default function TrackingPage({ params: paramsPromise }: { params: Promis
                 <TrackingMap 
                   pickup={{ lat: shipment.sender_lat, lng: shipment.sender_lng, label: shipment.sender_address }}
                   dropoff={{ lat: shipment.receiver_lat, lng: shipment.receiver_lng, label: shipment.receiver_address }}
+                  currentLocation={{ 
+                    lat: shipment.current_lat, 
+                    lng: shipment.current_lng, 
+                    label: shipment.current_location || "In Transit" 
+                  }}
+                  history={updates.slice().reverse().map((u: any) => ({ lat: u.lat, lng: u.lng })).filter((u: any) => typeof u.lat === 'number' && typeof u.lng === 'number')}
                   stops={shipment.stops || []}
-                  currentStopIndex={shipment.current_stop_index ?? -1}
-                  lastUpdate={shipment.updated_at}
+                  status={shipment.status}
                   transportType={shipment.transport_type as any}
                   interactive={true}
                 />

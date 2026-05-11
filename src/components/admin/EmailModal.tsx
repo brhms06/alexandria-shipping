@@ -11,6 +11,7 @@ interface EmailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSend: (content: string) => void;
+  onSkip: () => void;
   recipientEmail: string;
   recipientName: string;
   trackingId: string;
@@ -22,6 +23,7 @@ export default function EmailModal({
   isOpen,
   onClose,
   onSend,
+  onSkip,
   recipientEmail,
   recipientName,
   trackingId,
@@ -93,11 +95,11 @@ export default function EmailModal({
 
         <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
           <Button 
-            variant="ghost" 
-            onClick={onClose}
+            variant="secondary" 
+            onClick={onSkip}
             className="rounded-xl px-6 font-semibold text-slate-500 hover:bg-white"
           >
-            Discard
+            Save Without Email
           </Button>
           <Button 
             onClick={() => onSend(content)}

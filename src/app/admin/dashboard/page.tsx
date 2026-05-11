@@ -18,12 +18,13 @@ import { MobileSidebar } from "@/components/admin/Sidebar";
 import ShipmentModal from "@/components/admin/ShipmentModal";
 
 const STATUS_MAP: Record<number, { label: string, color: string, strip: string, text: string }> = {
-  1: { label: "Pending", color: "bg-orange-500", strip: "bg-orange-500", text: "text-orange-500" },
+  1: { label: "Order Received", color: "bg-orange-500", strip: "bg-orange-500", text: "text-orange-500" },
   2: { label: "Processing", color: "bg-blue-500", strip: "bg-blue-500", text: "text-blue-500" },
   3: { label: "In Transit", color: "bg-blue-600", strip: "bg-blue-600", text: "text-blue-600" },
-  4: { label: "On Hold", color: "bg-rose-500", strip: "bg-rose-500", text: "text-rose-500" },
-  5: { label: "In Transit", color: "bg-blue-600", strip: "bg-blue-600", text: "text-blue-600" },
-  6: { label: "Completed", color: "bg-emerald-500", strip: "bg-emerald-500", text: "text-emerald-500" }
+  4: { label: "Arrived at Stop", color: "bg-blue-600", strip: "bg-blue-600", text: "text-blue-600" },
+  5: { label: "Out for Delivery", color: "bg-blue-600", strip: "bg-blue-600", text: "text-blue-600" },
+  6: { label: "Delivered", color: "bg-emerald-500", strip: "bg-emerald-500", text: "text-emerald-500" },
+  7: { label: "On Hold", color: "bg-rose-500", strip: "bg-rose-500", text: "text-rose-500" }
 };
 
 const TRANSPORT_ICONS: Record<string, any> = {
@@ -73,8 +74,8 @@ export default function AdminDashboard() {
 
   const filteredShipments = shipments.filter(s => {
     if (filter === "All") return true;
-    if (filter === "Pending") return [1, 2, 4].includes(s.status);
-    if (filter === "In Transit") return [3, 5].includes(s.status);
+    if (filter === "Pending") return [1, 2, 7].includes(s.status);
+    if (filter === "In Transit") return [3, 4, 5].includes(s.status);
     if (filter === "Completed") return s.status === 6;
     return true;
   });
@@ -162,15 +163,8 @@ export default function AdminDashboard() {
               <div className="flex flex-col gap-5 max-w-5xl">
                 {filteredShipments.map((s) => {
                   const status = STATUS_MAP[s.status] || { label: "Unknown", color: "bg-slate-400", strip: "bg-slate-400", text: "text-slate-400" };
-                  const statusColors: Record<number, string> = {
-                    1: "bg-orange-500", 
-                    2: "bg-blue-500", 
-                    3: "bg-blue-600", 
-                    4: "bg-rose-500", 
-                    5: "bg-blue-600", 
-                    6: "bg-emerald-500"
-                  };
-                  const color = statusColors[s.status] || "bg-slate-400";
+                  const statusInfo = STATUS_MAP[s.status] || { label: "Unknown", color: "bg-slate-400", strip: "bg-slate-400", text: "text-slate-400" };
+                  const color = statusInfo.color;
 
                   return (
                     <motion.div
